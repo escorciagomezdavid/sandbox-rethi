@@ -41,6 +41,7 @@ public with sharing class lwcCitaOp {
 
     @AuraEnabled
     public static String asignacionCitaEntregaOp(String idOp, String citaEntrega,String userOperacion){
+        System.debug('asignacionCitaEntregaOp: ' + idOp + ' ' + citaEntrega + ' ' + userOperacion);
         try {
             CitaOp.asignacionCitaOp(idOp, citaEntrega, userOperacion);
             String citaAsignada = CitaOp.validacionCitaEntrega(idOp, citaEntrega, userOperacion);

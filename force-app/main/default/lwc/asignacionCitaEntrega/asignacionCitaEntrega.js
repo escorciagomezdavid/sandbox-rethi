@@ -3,6 +3,7 @@ import { CurrentPageReference } from 'lightning/navigation';
 import envioProductosEntrega from '@salesforce/apex/lwcCitaOp.envioProductosEntrega';
 import calendarioCitasEntrega from '@salesforce/apex/lwcCitaOp.calendarioCitasEntrega';
 import asignacionCitaEntregaOp from '@salesforce/apex/lwcCitaOp.asignacionCitaEntregaOp';
+import Id from '@salesforce/user/Id';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import Listo_a_Factruar__c from '@salesforce/schema/Opportunity.Listo_a_Factruar__c';
@@ -38,6 +39,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
     @track currentScreen = 1;
     @track products;
     @track error;
+    @track userId = Id;
 
     @api recordId;
     @wire(getRecord, { recordId: '$recordId', fields }) opportunity;
@@ -79,6 +81,29 @@ export default class AsignacionCitaEntrega extends LightningElement {
             .catch(error => {
                 this.error = error;
             });
+    }
+
+    assignFechaEntrega() {
+        if (datesSelected) {
+            asignacionCitaEntregaOp({
+                idOp: getFieldValue(this.opportunity.data, IdOP__c),
+                citaEntrega: datesSelected,
+                userOperacion: this.userId
+            })
+                .then(result => {
+                    console.log(`result assignFechaEntrega: ${result}`);
+                })
+                .catch(error => {
+                    this.error = error;
+                });
+        } else {
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: 'Debe Seleccionar una Fecha de Entrega',
+                variant: 'destructive'
+            }));
+        }
+
     }
 
     renderCalendar() {
