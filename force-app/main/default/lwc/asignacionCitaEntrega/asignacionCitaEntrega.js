@@ -1,13 +1,16 @@
 import { LightningElement, track, wire, api } from 'lwc';
 import { CurrentPageReference } from 'lightning/navigation';
 import envioProductosEntrega from '@salesforce/apex/lwcCitaOp.envioProductosEntrega';
+import calendarioCitasEntrega from '@salesforce/apex/lwcCitaOp.calendarioCitasEntrega';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import Listo_a_Factruar__c from '@salesforce/schema/Opportunity.Listo_a_Factruar__c';
 import CEmpresa__c from '@salesforce/schema/Opportunity.CEmpresa__c';
+import IdOP__c from '@salesforce/schema/Opportunity.IdOP__c';
+
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 
-const fields = [Listo_a_Factruar__c, CEmpresa__c]
+const fields = [Listo_a_Factruar__c, CEmpresa__c, IdOP__c]
 
 const datesEntrega = ["2023-03-13", "2023-02-28"];
 const datesArmado = ["2023-04-13", "2023-04-28"];
@@ -32,6 +35,8 @@ let currentYearArmado = todayArmado.getFullYear();
 
 export default class AsignacionCitaEntrega extends LightningElement {
     @track currentScreen = 1;
+    @track products;
+    @track error;
 
     @api recordId;
     @wire(getRecord, { recordId: '$recordId', fields }) opportunity;
@@ -48,8 +53,47 @@ export default class AsignacionCitaEntrega extends LightningElement {
         return listoFact;
     }
 
-    envioProductosEntrega() {
-        envioProductosEntrega({ idOportunidad: this.pageRef.attributes.recordId })
+    // envioProductosEntrega() {
+    //     envioProductosEntrega({ idOportunidad: this.pageRef.attributes.recordId })
+    //         .then(result => {
+    //             console.log(result);
+    //             if (result.length > 0 && result[0].success) {
+    //                 this.dispatchEvent(new ShowToastEvent({
+    //                     title: 'Success!',
+    //                     message: 'File Upload Success',
+    //                     variant: 'success'
+    //                 }));
+    //             }
+    //             this.dispatchEvent(new ShowToastEvent({
+    //                 title: 'False!',
+    //                 message: 'File Upload Failed',
+    //                 variant: 'destructive'
+    //             }));
+    //             return result;
+    //         })
+    //         .catch(error => {
+    //             console.error('Error: ', error);
+    //         });
+    // }
+
+    handleLoad() {
+        envioProductosEntrega({
+            idOportunidad: this.pageRef.attributes.recordId
+        })
+            .then(result => {
+                console.log(result);
+                this.products = result;
+            })
+            .catch(error => {
+                this.error = error;
+            });
+    }
+
+    calendarioCitasEntrega() {
+        calendarioCitasEntrega({
+            empresa: this.CEmpresa__c,
+            idOp: this.IdOP__c
+        })
             .then(result => {
                 console.log(result);
                 if (result.length > 0 && result[0].success) {
@@ -70,7 +114,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 console.error('Error: ', error);
             });
     }
-
 
     renderCalendar() {
         // Get reference to the calendar header

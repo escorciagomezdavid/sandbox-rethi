@@ -12,9 +12,16 @@
                         <h6>Info de Productos Aqui</h6>
                     </div>
                     <div class="content-btn-lower">
-                        <lightning-button label="Obtener Info de Productos" onclick={envioProductosEntrega}
+                        <lightning-button label="Obtener Info de Productos" onclick={handleLoad}
                             class="btn-lower"></lightning-button>
                     </div>
+                    <template if:true={products}>
+                        <template for:each={products} for:item="product">
+                            <p key={product.Id}>Codigo: {product.ProductCode}</p>
+                            <p key={product.Id}>Descripcion: {product.Product2.Description}</p>
+                            <p key={product.Id}>Cantidad: {product.Quantity}</p>
+                        </template>
+                    </template>
                     <div class="content-btn-lower">
                         <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
                             class="btn-lower"></lightning-button>
@@ -55,6 +62,11 @@
                     <div id="calendar" class="calendar-table" onrender={renderCalendar}>
                         <div>
                             <lightning-button label="🔁" onclick={renderCalendar}></lightning-button>
+                            <h2 class="month-year" lwc:dom="manual"></h2>
+                        </div>
+                        <div>
+                            <lightning-button label="Obtener Fechas"
+                                onclick={calendarioCitasEntrega}></lightning-button>
                             <h2 class="month-year" lwc:dom="manual"></h2>
                         </div>
                         <table>
