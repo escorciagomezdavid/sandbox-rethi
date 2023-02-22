@@ -1,0 +1,147 @@
+<template>
+    <template if:true={showScreen1}>
+        <lightning-button label="Asignar Cita" onclick={nextScreen}></lightning-button>
+    </template>
+
+    <template if:true={showScreen2}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <section class="slds-modal__container">
+
+                <lightning-card title="Info de Producto" icon-name="utility:user" class="lc-listo-facturar-true">
+                    <div style="padding: 10px">
+                        <h6>Info de Productos Aqui</h6>
+                    </div>
+                    <div class="content-btn-lower">
+                        <lightning-button label="Obtener Info de Productos" onclick={envioProductosEntrega}
+                            class="btn-lower"></lightning-button>
+                    </div>
+                    <div class="content-btn-lower">
+                        <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
+                            class="btn-lower"></lightning-button>
+                    </div>
+                </lightning-card>
+
+            </section>
+        </section>
+        <section class="slds-backdrop slds-backdrop_open" onclick={closeModal}></section>
+        <div></div>
+    </template>
+
+    <template if:true={showScreenError}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <section class="slds-modal__container">
+
+                <lightning-card title="La Oportunidad No se encuentra Lista a Facturar" class="lc-listo-facturar-false">
+                    <div class="content-btn-lower">
+                        <lightning-button label="Cerrar" onclick={closeModal} class="btn-lower"></lightning-button>
+                    </div>
+                </lightning-card>
+
+
+            </section>
+        </section>
+        <section class="slds-backdrop slds-backdrop_open" onclick={closeModal}></section>
+        <div></div>
+    </template>
+
+
+    <template if:true={showScreen3}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <section class="slds-modal__container">
+
+                <lightning-card class="c-lightning-card" title="Fechas de Entrega Disponibles"
+                    icon-name="utility:event">
+
+                    <div id="calendar" class="calendar-table" onrender={renderCalendar}>
+                        <div>
+                            <lightning-button label="🔁" onclick={renderCalendar}></lightning-button>
+                            <h2 class="month-year" lwc:dom="manual"></h2>
+                        </div>
+                        <table id="calendar-body">
+                            <thead>
+                                <tr>
+                                    <th>Dom</th>
+                                    <th>Lun</th>
+                                    <th>Mar</th>
+                                    <th>Mie</th>
+                                    <th>Jue</th>
+                                    <th>Vie</th>
+                                    <th>Sab</th>
+                                </tr>
+                            </thead>
+                            <tbody class="calendar-dates" lwc:dom="manual"></tbody>
+                        </table>
+                        <div id="calendar-header" class="calendar-header">
+                            <lightning-button class="prev-month" label="<" onclick={prevMonth}></lightning-button>
+                            <lightning-button class="next-month" label=">" onclick={nextMonth}></lightning-button>
+                        </div>
+                    </div>
+                    <div class="content-btn-lower">
+                        <lightning-button class="btn-lower" label="Asignar Fecha Entrega"
+                            onclick={nextScreen}></lightning-button>
+                    </div>
+                </lightning-card>
+
+            </section>
+        </section>
+        <section class="slds-backdrop slds-backdrop_open" onload={renderCalendar}></section>
+    </template>
+
+    <template if:true={showScreen4}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <section class="slds-modal__container">
+
+                <lightning-card title="Fecha de Entrega Asignada Exitosamente...!" icon-name="utility:user">
+
+
+                    <div style="padding: 10px">{currentPageReference}</div>
+                    <div class="content-btn-lower">
+                        <lightning-button label="Armado" onclick={nextScreen} class="btn-lower"></lightning-button>
+                    </div>
+
+                </lightning-card>
+
+            </section>
+        </section>
+        <section class="slds-backdrop slds-backdrop_open"></section>
+    </template>
+
+    <template if:true={showScreen5}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <section class="slds-modal__container">
+
+                <lightning-card title="Calendario de Fechas Armado Disponibles" icon-name="utility:user">
+
+
+                    <div style="padding: 10px">{currentPageReference}</div>
+                    <div class="content-btn-lower">
+                        <lightning-button label="Asignar Fecha Armado" onclick={nextScreen}
+                            class="btn-lower"></lightning-button>
+                    </div>
+
+                </lightning-card>
+
+            </section>
+        </section>
+        <section class="slds-backdrop slds-backdrop_open"></section>
+    </template>
+
+    <template if:true={showScreen6}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <section class="slds-modal__container">
+
+                <lightning-card title="Fecha de Armado Asignada Exitosamente...!" icon-name="utility:user">
+
+
+                    <div style="padding: 10px">{currentPageReference}</div>
+                    <div class="content-btn-lower">
+                        <lightning-button label="Cerrar" onclick={refreshPage} class="btn-lower"></lightning-button>
+                    </div>
+
+                </lightning-card>
+
+            </section>
+        </section>
+        <section class="slds-backdrop slds-backdrop_open"></section>
+    </template>
+</template>

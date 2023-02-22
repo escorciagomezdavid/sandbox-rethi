@@ -1,0 +1,10 @@
+<design:component label="List String Data">
+    <design:attribute name="message" />
+    <design:attribute name="cupo_max" />
+    <design:attribute name="cuotasugmax" />
+    <design:attribute name="accsug_credito" />
+    <design:attribute name="accsug_tj" />
+    <design:attribute name="desc_accsugcr" />
+    <design:attribute name="desc_accsugtj" />
+    <design:attribute name="error" />
+</design:component>

@@ -1,0 +1,5 @@
+<design:component>
+	<design:attribute name="message" />
+    <design:attribute name="message2" />
+   	<design:attribute name="selectedValue" />
+</design:component>

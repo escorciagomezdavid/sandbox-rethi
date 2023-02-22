@@ -1,0 +1,14 @@
+<template>
+    <div class="slds-is-relative">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+            </lightning-spinner>
+        </template>
+    </div>
+    <strong><lightning-input label="Generar Cita de servicio"  type="checkbox" onchange={handleChange} ></lightning-input>
+    </lightning-input></strong>
+    <template if:true={checkboxVal}>
+    <br>
+    <lightning-button label="Buscar una cita ahora" title="ver disponibilidad" onclick={validacionPartidas}></lightning-button>
+    </template>
+</template>

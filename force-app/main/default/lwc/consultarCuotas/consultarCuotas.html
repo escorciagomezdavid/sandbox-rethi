@@ -1,0 +1,46 @@
+<template>
+        <lightning-card variant="Narrow" title="Cuotas" icon-name="standard:partner_marketing_budget">
+    
+                <!-- Spinner -->
+                <template if:false={loaded}>
+                        <lightning-spinner alternative-text="Cargando cuotas..." size="small"></lightning-spinner>
+                </template>
+
+                <!-- Sin Resultados -->
+                <template if:true={hasError}>
+                        <div role="alert" class="error uiMessage">{errorMessage}</div>
+                </template>
+    
+                <!-- Con Resultados -->
+                <template if:true={listCuotas}>
+                        <!-- Cuotas de Factura -->
+                        <div if:true={objeto}>
+                                <lightning-datatable key-field="ID_CUOTA" 
+                                        data={listCuotas.data} 
+                                        columns={columns}
+                                        hide-checkbox-column= true
+                                        default-sort-direction={defaultSortDirection}
+                                        sorted-direction={sortDirection}
+                                        sorted-by={sortedBy}
+                                        onsort={onHandleSort}>
+                                </lightning-datatable>
+                        </div>
+    
+                        <!-- Facturas y Cuotas por Cartera -->
+                        <div if:false={objeto}>
+                                <template for:each={listCuotas.data} for:item="factura" for:index="index">
+                                        <div style="background-color: #f3f3f3; font-size: 16px; font-size: 15px; padding: 10px; font-weight: bold;" key={factura}>Factura: {factura.factura}</div>
+
+                                        <lightning-datatable key={factura.factura} key-field="ID_CUOTA" 
+                                                data={factura.cuotas}
+                                                columns={columnsCartera}
+                                                hide-checkbox-column= true
+                                                default-sort-direction={defaultSortDirection}
+                                                sorted-direction={sortDirection}
+                                                sorted-by={sortedBy}>
+                                        </lightning-datatable>
+                                </template>
+                        </div>
+                </template>
+        </lightning-card>
+</template>

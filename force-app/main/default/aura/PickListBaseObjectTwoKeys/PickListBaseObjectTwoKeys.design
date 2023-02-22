@@ -1,0 +1,7 @@
+<design:component label="PickList Object">
+    <design:attribute name="tag" />
+    <design:attribute name="message" />
+    <design:attribute name="selectedValue" />
+    <design:attribute name="selectedLabel" />
+
+</design:component>

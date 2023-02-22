@@ -1,0 +1,14 @@
+<template>
+    <lightning-spinner if:true={isLoading} alternative-text="Loading" size="small"></lightning-spinner>
+    <div class="slds-m-around_small">
+        <lightning-input label="" name="file uploader" onchange={handleFilesChange} type="file" data-name="sel" multiple></lightning-input>
+    </div>
+    <div class="slds-m-around_small">
+        <template for:each={filesUploaded} for:item="file">
+            <div key={file.Title} class="slds-text-body_small">{file.Title}</div>
+        </template>
+    </div>
+    <div class="slds-m-around_small">
+        <lightning-button variant="brand" label="Upload" title="Upload" onclick={saveFile}></lightning-button>
+    </div>
+</template>

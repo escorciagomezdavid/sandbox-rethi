@@ -1,0 +1,15 @@
+<aura:component  implements="lightning:availableForFlowScreens" access="global">
+    <aura:attribute name="tag" type="String" access="global"/>
+    <aura:attribute name="message" type="String" access="global"/>
+    <aura:attribute name="options" type="List"/>
+    <aura:attribute name="selectedValue" type="String" access="global"/>
+    <aura:attribute name="selectedLabel" type="String" access="global"/>
+    <aura:handler name="init" value="{!this}" action="{!c.loadOptions}" />
+
+    <lightning:select name="mySelect" label="{!v.tag}" aura:id="mySelect" value="{!v.selectedValue}" onchange="{!c.handleChange}" class="select">
+         <aura:iteration items="{!v.options}" var="item">
+            <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+        </aura:iteration>
+    </lightning:select>
+    
+</aura:component>

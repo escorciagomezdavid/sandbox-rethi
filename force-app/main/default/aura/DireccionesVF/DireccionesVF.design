@@ -1,0 +1,5 @@
+<design:component>
+	 <design:attribute name="VfData" label="VfData" />
+     <design:attribute name="VfPais" label="VfPais" />
+     <design:attribute name="VfDepartamento" label="VfDepartamento" />
+</design:component>

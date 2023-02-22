@@ -1,0 +1,21 @@
+<aura:component  implements="lightning:availableForFlowScreens" access="global">
+    <aura:attribute name="message" type="String" access="global"/>
+    <aura:attribute name="cupo_max" type="String" access="global"/>
+    <aura:attribute name="cuotasugmax" type="String" access="global"/>
+    <aura:attribute name="accsug_credito" type="String" access="global"/>
+    <aura:attribute name="accsug_tj" type="String" access="global"/>
+    <aura:attribute name="desc_accsugcr" type="String" access="global"/>
+    <aura:attribute name="desc_accsugtj" type="String" access="global"/>
+    <aura:attribute name="error" type="String" access="global"/>
+    <aura:handler name="init" value="{!this}" action="{!c.loadOptions}" />
+
+    <p class="slds-text-body_regular"><lightning:formattedText name= "cupo_max" value="{!v.cupo_max}" /></p>
+    <p class="slds-text-body_regular"><lightning:formattedText name= "cuotasugmax" value="{!v.cuotasugmax}" /></p>
+    <p class="slds-text-body_regular"><lightning:formattedText name= "accsug_credito" value="{!v.accsug_credito}" /></p>
+    <p class="slds-text-body_regular"><lightning:formattedText name= "accsug_tj" value="{!v.accsug_tj}" /></p>
+    <p class="slds-text-body_regular"><lightning:formattedText name= "desc_accsugcr" value="{!v.desc_accsugcr}" /></p>
+    <p class="slds-text-body_regular"><lightning:formattedText name= "desc_accsugtj" value="{!v.desc_accsugtj}" /></p>
+    <p class="slds-text-body_regular"><lightning:formattedText name= "error" value="{!v.error}" /></p>
+
+    
+</aura:component>

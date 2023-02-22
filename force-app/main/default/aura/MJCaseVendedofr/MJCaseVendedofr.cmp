@@ -1,0 +1,147 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" 
+                controller= "CaseReloaded">
+    
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="FlowCanvan" type="boolean" default="false"/>
+    <aura:attribute name="tipovalue" type="string" />
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="insideScroller" type="Boolean" default="false"/>
+    <aura:attribute name="Execute" type="String" />
+    <aura:attribute name="CaseName" type="String" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="Testing"  type="String" />
+ 
+	  
+    <div class="slds-page-header">
+        <div class="slds-grid">
+            <aura:if isTrue="{!v.isLoading}">
+                <lightning:spinner variant="brand" size="large" alternativeText="Cargando..." />
+            </aura:if>
+            
+            <div class="slds-media slds-no-space slds-grow">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-account" title="Description of icon when needed">
+                        <lightning:icon iconName="standard:timesheet" />
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    
+                    <nav>
+                        <ol class="slds-breadcrumb slds-line-height_reset">
+                            <li class="slds-breadcrumb__item">
+                                <span>Casos</span>
+                            </li>
+                        </ol>
+                    </nav>
+                    <div style="display:inline-block;width:40%;vertical-align:top;">
+                        <b>
+                            <nav>
+                                <ol class="slds-breadcrumb slds-line-height_reset">
+                                    <li class="slds-breadcrumb__item">
+                                        <span>Muebles Jamar</span>
+                                    </li>
+                                </ol>
+                            </nav>
+                        </b>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            <div class="slds-m-around_none slds-col slds-no-flex slds-grid slds-align-top"> 
+                <lightning:button variant="brand"
+                                  iconName="utility:new"
+                                  label="Crear Caso"
+                                  title="Crear Caso"
+                                  onclick="{! c.openModel }" />
+                
+                <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+                
+                
+                <aura:if isTrue="{!v.isOpen}">
+                    
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-slide-down-cancel">
+                        <div class="slds-modal__container">
+                            
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.closeModel }"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h2 id="modal-heading-01" class="slds-text-heading_small slds-hyphenate">Crear Caso</h2>
+                            </header>
+                            
+                            <div class="slds-modal__menu slds-p-around_large" id="modal-content-id-1">
+                                <p><b>
+                                    <lightning:recordEditForm aura:id="recordViewForm" 
+                                                              objectApiName="Objeto_Asistente__c">
+                                        <lightning:messages />
+                                        <lightning:inputField fieldName="PickCasosVendedor__c" onchange="{!c.onDependentFieldChange}"/>
+                                    </lightning:recordEditForm>
+                                    </b>
+                                </p>
+                            </div>
+                            
+                                                       
+						
+                            
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="neutral" 
+                                                  label="Cancelar"
+                                                  title="Cancelar"
+                                                  onclick="{! c.closeModel }"/>
+                                <lightning:button variant="brand" 
+                                                  label="Crear Caso"
+                                                  title="Crear Caso"
+                                                  class="{!e.Id}"
+                                                  onclick="{!c.createRecord}"/>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>   
+                    
+                    
+                </aura:if> 
+            </div>            
+        </div>
+    </div>
+      
+    
+    
+     <aura:if isTrue="{!v.FlowCanvan}">
+          <div class="slds-backdrop slds-backdrop_open">
+                    
+                   <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-slide-down-cancel">
+                        <div class="slds-modal__container">
+                            
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{!c.closeFlowModel}"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h2 id="modal-heading-01" class="slds-text-heading_small slds-hyphenate">{!v.CaseName}</h2>
+                            </header>
+                            
+                            <div class="slds-modal__menu slds-p-around_large" id="modal-content-id-1">
+                                <p><b>   
+                    	 <p><b>
+                                  
+                    
+             	 <lightning:flow aura:id="flowData" onstatuschange="{!c.handleStatusChange}"/>   
+                                 
+                                
+                            
+                             </b>
+                                    </p>
+                                    </b>
+                                </p>
+                            </div>
+                       </div>
+                    </section>
+            </div>   
+                </aura:if>
+   
+</aura:component>
