@@ -7,21 +7,33 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="Info de Producto" icon-name="utility:user" class="lc-listo-facturar-true">
-                    <div style="padding: 10px">
-                        <h6>Info de Productos Aqui</h6>
-                    </div>
-                    <div class="content-btn-lower">
-                        <lightning-button label="Obtener Info de Productos" onclick={handleLoad}
-                            class="btn-lower"></lightning-button>
-                    </div>
-                    <template if:true={products}>
-                        <template for:each={products} for:item="product">
-                            <p key={product.Id}>Codigo: {product.ProductCode}</p>
-                            <p key={product.Id}>Descripcion: {product.Product2.Description}</p>
-                            <p key={product.Id}>Cantidad: {product.Quantity}</p>
+                <lightning-card title="Productos de la OP" icon-name="utility:user" class="lc-listo-facturar-true">
+                    <div class="calendar-table" onrender={renderCalendar}>
+                        <div class="content-btn-lower">
+                            <lightning-button label="Obtener Info de Productos" onclick={loadProducts}
+                                class="btn-lower"></lightning-button>
+                        </div>
+                        <template if:true={products}>
+                            <table>
+                                <thead id="product-body">
+                                    <tr>
+                                        <th>Codigo</th>
+                                        <th>Descripcion</th>
+                                        <th>Cantidad</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="product-dates">
+                                    <template for:each={products} for:item="product">
+                                        <tr key={product.Id}>
+                                            <td>{product.ProductCode}</td>
+                                            <td class="td-align-left">{product.Product2.Description}</td>
+                                            <td>{product.Quantity}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
                         </template>
-                    </template>
+                    </div>
                     <div class="content-btn-lower">
                         <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
                             class="btn-lower"></lightning-button>
@@ -65,8 +77,6 @@
                             <h2 class="month-year" lwc:dom="manual"></h2>
                         </div>
                         <div>
-                            <lightning-button label="Obtener Fechas"
-                                onclick={calendarioCitasEntrega}></lightning-button>
                             <h2 class="month-year" lwc:dom="manual"></h2>
                         </div>
                         <table>
