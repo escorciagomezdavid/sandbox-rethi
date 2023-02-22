@@ -51,21 +51,20 @@ export default class AsignacionCitaEntrega extends LightningElement {
     envioProductosEntrega() {
         envioProductosEntrega({ idOportunidad: this.pageRef.attributes.recordId })
             .then(result => {
-                console.log(result.productosOp);
-                if (result.length > 0) {
+                console.log(result);
+                if (result.length > 0 && result[0].success) {
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'Success!',
                         message: 'File Upload Success',
                         variant: 'success'
                     }));
-                    return result;
-                } else {
-                    this.dispatchEvent(new ShowToastEvent({
-                        title: 'False!',
-                        message: 'File Upload Failed',
-                        variant: 'destructive'
-                    }));
                 }
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'False!',
+                    message: 'File Upload Failed',
+                    variant: 'destructive'
+                }));
+                return result;
             })
             .catch(error => {
                 console.error('Error: ', error);
