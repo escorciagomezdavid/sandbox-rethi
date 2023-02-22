@@ -58,7 +58,7 @@
                             <h2 class="month-year" lwc:dom="manual"></h2>
                         </div>
                         <table>
-                            <thead>
+                            <thead id="calendar-body">
                                 <tr>
                                     <th>Dom</th>
                                     <th>Lun</th>
@@ -114,11 +114,11 @@
 
                     <div id="calendar-armado" class="calendar-table" onrender={renderCalendarArmado}>
                         <div>
-                            <lightning-button label="🔁" onclick={renderCalendar}></lightning-button>
-                            <h2 class="month-year" lwc:dom="manual"></h2>
+                            <lightning-button label="🔁" onclick={renderCalendarArmado}></lightning-button>
+                            <h2 class="month-year-armado" lwc:dom="manual"></h2>
                         </div>
                         <table>
-                            <thead>
+                            <thead id="calendar-armado-body">
                                 <tr>
                                     <th>Dom</th>
                                     <th>Lun</th>
@@ -131,9 +131,9 @@
                             </thead>
                             <tbody class="calendar-dates-armado" lwc:dom="manual"></tbody>
                         </table>
-                        <div id="calendar-armado-header" class="calendar-header">
-                            <lightning-button class="prev-month" label="<" onclick={prevMonth}></lightning-button>
-                            <lightning-button class="next-month" label=">" onclick={nextMonth}></lightning-button>
+                        <div id="calendar-armado-header" class="calendar-armado-header">
+                            <lightning-button class="prev-month" label="<" onclick={prevMonthArmado}></lightning-button>
+                            <lightning-button class="next-month" label=">" onclick={nextMonthArmado}></lightning-button>
                         </div>
                     </div>
                     <div class="content-btn-lower">

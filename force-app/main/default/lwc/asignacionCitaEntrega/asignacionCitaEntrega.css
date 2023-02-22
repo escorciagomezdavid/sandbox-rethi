@@ -34,6 +34,14 @@ th {
     margin: auto;
 }
 
+.month-year-armado {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    width: 50%;
+    margin: auto;
+}
+
 .calendar-header {
     display: flex;
     justify-content: space-between;
@@ -41,7 +49,18 @@ th {
     padding: 10px;
 }
 
+.calendar-armado-header {
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    padding: 10px;
+}
+
 .calendar-dates {
+    width: 100%;
+}
+
+.calendar-dates-armado {
     width: 100%;
 }
 

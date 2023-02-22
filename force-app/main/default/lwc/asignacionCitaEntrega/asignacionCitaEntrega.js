@@ -12,6 +12,7 @@ const fields = [Listo_a_Factruar__c, CEmpresa__c]
 const datesEntrega = ["2023-03-13", "2023-02-28"];
 const datesArmado = ["2023-04-13", "2023-04-28"];
 let datesSelected = "";
+let datesSelectedArmado = "";
 let listoFact = false;
 
 // Get today's date
@@ -20,6 +21,13 @@ const today = new Date();
 // Get the current month and year
 let currentMonth = today.getMonth();
 let currentYear = today.getFullYear();
+
+// Get today's date
+const todayArmado = new Date();
+
+// Get the current month and year
+let currentMonthArmado = todayArmado.getMonth();
+let currentYearArmado = todayArmado.getFullYear();
 
 
 export default class AsignacionCitaEntrega extends LightningElement {
@@ -159,11 +167,11 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     renderCalendarArmado() {
         // Get reference to the calendar header
-        const calendarHeader = this.template.querySelector(".month-year");
-        console.log("CalendarHeader: " + calendarHeader)
+        const calendarHeaderArmado = this.template.querySelector(".month-year-armado");
+        console.log("CalendarHeaderArmado: " + calendarHeaderArmado)
 
         // Get reference to the calendar body
-        const calendarBody = this.template.querySelector('.calendar-dates-armado');
+        const calendarBodyArmado = this.template.querySelector('.calendar-dates-armado');
 
         // Get reference to the previous and next buttons
         // eslint-disable-next-line no-unused-vars
@@ -171,8 +179,8 @@ export default class AsignacionCitaEntrega extends LightningElement {
         // eslint-disable-next-line no-unused-vars
         const nextButton = this.template.querySelector('.next-month');
 
-        // Create an array of all the months
-        const months = [
+        // Create an array of all the monthsArmado
+        const monthsArmado = [
             "Enero",
             "Febrero",
             "Marzo",
@@ -188,64 +196,64 @@ export default class AsignacionCitaEntrega extends LightningElement {
         ];
 
         // Set the calendar header
-        calendarHeader.textContent = `${months[currentMonth]} ${currentYear}`;
+        calendarHeaderArmado.textContent = `${monthsArmado[currentMonthArmado]} ${currentYearArmado}`;
 
         // Get the number of days in the current month
-        const numDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const numDaysInMonthArmado = new Date(currentYearArmado, currentMonthArmado + 1, 0).getDate();
 
         // Get the first day of the month
-        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+        const firstDayOfMonthArmado = new Date(currentYearArmado, currentMonthArmado, 1).getDay();
 
         // Create a variable to keep track of the current day
-        let currentDay = 1;
+        let currentDayArmado = 1;
 
         // Clear the calendar body
-        calendarBody.textContent = '';
+        calendarBodyArmado.textContent = '';
 
-        // Create the calendar rows
+        // Create the calendar rowArmados
         for (let i = 0; i < 6; i++) {
-            // Create a table row
-            const row = document.createElement('tr');
+            // Create a table rowArmado
+            const rowArmado = document.createElement('tr');
 
-            // Create the table cells
+            // Create the table cellArmados
             for (let j = 0; j < 7; j++) {
-                // Create a table cell
-                const cell = document.createElement('td');
-                cell.style.border = "none";
+                // Create a table cellArmado
+                const cellArmado = document.createElement('td');
+                cellArmado.style.border = "none";
 
-                // Check if the current cell should have a date
-                if (i === 0 && j < firstDayOfMonth) {
-                    cell.textContent = '';
-                } else if (currentDay <= numDaysInMonth) {
-                    cell.textContent = currentDay;
-                    let currentDate = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (currentDay)).slice(-2)}`;
-                    cell.style.alignContent = "center";
-                    if (datesArmado.includes(currentDate)) {
-                        cell.style.border = "solid";
-                        cell.style.borderColor = "#6f9cef";
-                        cell.style.fontWeight = 'bold';
-                        cell.style.cursor = 'pointer';
+                // Check if the current cellArmado should have a date
+                if (i === 0 && j < firstDayOfMonthArmado) {
+                    cellArmado.textContent = '';
+                } else if (currentDayArmado <= numDaysInMonthArmado) {
+                    cellArmado.textContent = currentDayArmado;
+                    let currentDateArmado = `${currentYearArmado}-${("0" + (currentMonthArmado + 1)).slice(-2)}-${("0" + (currentDayArmado)).slice(-2)}`;
+                    cellArmado.style.alignContent = "center";
+                    if (datesArmado.includes(currentDateArmado)) {
+                        cellArmado.style.border = "solid";
+                        cellArmado.style.borderColor = "#6f9cef";
+                        cellArmado.style.fontWeight = 'bold';
+                        cellArmado.style.cursor = 'pointer';
                         // eslint-disable-next-line no-loop-func
-                        cell.addEventListener('click', () => {
-                            datesSelected = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (cell.textContent)).slice(-2)}`;
-                            console.log(datesSelected);
+                        cellArmado.addEventListener('click', () => {
+                            datesSelectedArmado = `${currentYearArmado}-${("0" + (currentMonthArmado + 1)).slice(-2)}-${("0" + (cellArmado.textContent)).slice(-2)}`;
+                            console.log(datesSelectedArmado);
                         });
                     } else {
-                        cell.style.color = "black";
-                        cell.style.opacity = "50%";
+                        cellArmado.style.color = "black";
+                        cellArmado.style.opacity = "50%";
                     }
-                    currentDay++;
+                    currentDayArmado++;
                 } else {
-                    cell.textContent = '';
+                    cellArmado.textContent = '';
                 }
 
-                // Append the cell to the row
-                row.appendChild(cell);
+                // Append the cellArmado to the rowArmado
+                rowArmado.appendChild(cellArmado);
 
             }
 
-            // Append the row to the calendar body
-            calendarBody.appendChild(row);
+            // Append the rowArmado to the calendar body
+            calendarBodyArmado.appendChild(rowArmado);
         }
     }
 
@@ -320,6 +328,26 @@ export default class AsignacionCitaEntrega extends LightningElement {
             currentYear++;
         }
         this.renderCalendar();
+    }
+
+    prevMonthArmado() {
+        console.log("Hola Mundo Desde prevMonth");
+        currentMonthArmado--;
+        if (currentMonthArmado < 0) {
+            currentMonthArmado = 11;
+            currentYearArmado--;
+        }
+        this.renderCalendarArmado();
+    }
+
+    nextMonthArmado() {
+        console.log("Hola Mundo Desde nextMonth");
+        currentMonthArmado++;
+        if (currentMonthArmado > 11) {
+            currentMonthArmado = 0;
+            currentYearArmado++;
+        }
+        this.renderCalendarArmado();
     }
 
 }
