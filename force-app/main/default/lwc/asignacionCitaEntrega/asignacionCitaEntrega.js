@@ -9,7 +9,8 @@ import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 
 const fields = [Listo_a_Factruar__c, CEmpresa__c]
 
-const dates = ["2023-03-13", "2023-02-28"];
+const datesEntrega = ["2023-03-13", "2023-02-28"];
+const datesArmado = ["2023-04-13", "2023-04-28"];
 let datesSelected = "";
 let listoFact = false;
 
@@ -40,21 +41,20 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     envioProductosEntrega() {
-        envioProductosEntrega({
-            idOp: this.pageRef.attributes.recordId
-        })
+        envioProductosEntrega({ idOportunidad: this.pageRef.attributes.recordId })
             .then(result => {
-                console.log(result);
-                if (result == 'Success') {
+                console.log(result.productosOp);
+                if (result.length > 0) {
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'Success!',
                         message: 'File Upload Success',
                         variant: 'success'
                     }));
+                    return result;
                 } else {
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'False!',
-                        message: result,
+                        message: 'File Upload Failed',
                         variant: 'destructive'
                     }));
                 }
@@ -63,6 +63,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 console.error('Error: ', error);
             });
     }
+
 
     renderCalendar() {
         // Get reference to the calendar header
@@ -127,7 +128,99 @@ export default class AsignacionCitaEntrega extends LightningElement {
                     cell.textContent = currentDay;
                     let currentDate = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (currentDay)).slice(-2)}`;
                     cell.style.alignContent = "center";
-                    if (dates.includes(currentDate)) {
+                    if (datesEntrega.includes(currentDate)) {
+                        cell.style.border = "solid";
+                        cell.style.borderColor = "#6f9cef";
+                        cell.style.fontWeight = 'bold';
+                        cell.style.cursor = 'pointer';
+                        // eslint-disable-next-line no-loop-func
+                        cell.addEventListener('click', () => {
+                            datesSelected = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (cell.textContent)).slice(-2)}`;
+                            console.log(datesSelected);
+                        });
+                    } else {
+                        cell.style.color = "black";
+                        cell.style.opacity = "50%";
+                    }
+                    currentDay++;
+                } else {
+                    cell.textContent = '';
+                }
+
+                // Append the cell to the row
+                row.appendChild(cell);
+
+            }
+
+            // Append the row to the calendar body
+            calendarBody.appendChild(row);
+        }
+    }
+
+    renderCalendarArmado() {
+        // Get reference to the calendar header
+        const calendarHeader = this.template.querySelector(".month-year");
+        console.log("CalendarHeader: " + calendarHeader)
+
+        // Get reference to the calendar body
+        const calendarBody = this.template.querySelector('.calendar-dates-armado');
+
+        // Get reference to the previous and next buttons
+        // eslint-disable-next-line no-unused-vars
+        const prevButton = this.template.querySelector('.prev-month');
+        // eslint-disable-next-line no-unused-vars
+        const nextButton = this.template.querySelector('.next-month');
+
+        // Create an array of all the months
+        const months = [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre"
+        ];
+
+        // Set the calendar header
+        calendarHeader.textContent = `${months[currentMonth]} ${currentYear}`;
+
+        // Get the number of days in the current month
+        const numDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // Get the first day of the month
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+
+        // Create a variable to keep track of the current day
+        let currentDay = 1;
+
+        // Clear the calendar body
+        calendarBody.textContent = '';
+
+        // Create the calendar rows
+        for (let i = 0; i < 6; i++) {
+            // Create a table row
+            const row = document.createElement('tr');
+
+            // Create the table cells
+            for (let j = 0; j < 7; j++) {
+                // Create a table cell
+                const cell = document.createElement('td');
+                cell.style.border = "none";
+
+                // Check if the current cell should have a date
+                if (i === 0 && j < firstDayOfMonth) {
+                    cell.textContent = '';
+                } else if (currentDay <= numDaysInMonth) {
+                    cell.textContent = currentDay;
+                    let currentDate = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (currentDay)).slice(-2)}`;
+                    cell.style.alignContent = "center";
+                    if (datesArmado.includes(currentDate)) {
                         cell.style.border = "solid";
                         cell.style.borderColor = "#6f9cef";
                         cell.style.fontWeight = 'bold';

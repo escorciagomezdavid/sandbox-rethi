@@ -57,7 +57,7 @@
                             <lightning-button label="🔁" onclick={renderCalendar}></lightning-button>
                             <h2 class="month-year" lwc:dom="manual"></h2>
                         </div>
-                        <table id="calendar-body">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>Dom</th>
@@ -110,15 +110,36 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="Calendario de Fechas Armado Disponibles" icon-name="utility:user">
+                <lightning-card class="c-lightning-card" title="Fechas de Armado Disponibles" icon-name="utility:event">
 
-
-                    <div style="padding: 10px">{currentPageReference}</div>
-                    <div class="content-btn-lower">
-                        <lightning-button label="Asignar Fecha Armado" onclick={nextScreen}
-                            class="btn-lower"></lightning-button>
+                    <div id="calendar-armado" class="calendar-table" onrender={renderCalendarArmado}>
+                        <div>
+                            <lightning-button label="🔁" onclick={renderCalendar}></lightning-button>
+                            <h2 class="month-year" lwc:dom="manual"></h2>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dom</th>
+                                    <th>Lun</th>
+                                    <th>Mar</th>
+                                    <th>Mie</th>
+                                    <th>Jue</th>
+                                    <th>Vie</th>
+                                    <th>Sab</th>
+                                </tr>
+                            </thead>
+                            <tbody class="calendar-dates-armado" lwc:dom="manual"></tbody>
+                        </table>
+                        <div id="calendar-armado-header" class="calendar-header">
+                            <lightning-button class="prev-month" label="<" onclick={prevMonth}></lightning-button>
+                            <lightning-button class="next-month" label=">" onclick={nextMonth}></lightning-button>
+                        </div>
                     </div>
-
+                    <div class="content-btn-lower">
+                        <lightning-button class="btn-lower" label="Asignar Fecha Armado"
+                            onclick={nextScreen}></lightning-button>
+                    </div>
                 </lightning-card>
 
             </section>
