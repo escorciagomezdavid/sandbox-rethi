@@ -23,6 +23,7 @@ public with sharing class lwcCitaOp {
        
     @AuraEnabled
     public static list<responseProductos> envioProductosEntrega(Id idOportunidad){
+        System.debug(idOportunidad);
         responseProductos rp = new responseProductos();
         list<responseProductos> value = new list<responseProductos>();
         try{
@@ -31,10 +32,12 @@ public with sharing class lwcCitaOp {
                 rp.success=true;
                 rp.productosOp = op;
                 value.add(rp);
+                system.debug('value if: ' + value);
                 return value;
             }else{
                 rp.success=false;
                 value.add(rp);
+                system.debug('value else: ' + value);
                 return value;
             }
         }catch(Exception e){

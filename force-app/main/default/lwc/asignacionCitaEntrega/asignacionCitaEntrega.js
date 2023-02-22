@@ -40,21 +40,20 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     envioProductosEntrega() {
-        envioProductosEntrega({
-            idOp: this.pageRef.attributes.recordId
-        })
+        envioProductosEntrega({ idOportunidad: this.pageRef.attributes.recordId })
             .then(result => {
-                console.log(result);
-                if (result == 'Success') {
+                console.log(result.productosOp);
+                if (result.length > 0) {
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'Success!',
                         message: 'File Upload Success',
                         variant: 'success'
                     }));
+                    return result;
                 } else {
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'False!',
-                        message: result,
+                        message: 'File Upload Failed',
                         variant: 'destructive'
                     }));
                 }
@@ -63,6 +62,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 console.error('Error: ', error);
             });
     }
+
 
     renderCalendar() {
         // Get reference to the calendar header
