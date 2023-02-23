@@ -11,7 +11,7 @@
                     <div class="btn-close-modal">
                         <lightning-button label="❌" onclick={closeModal}></lightning-button>
                     </div>
-                    <div class="calendar-table" onrender={renderCalendar}>
+                    <div class="calendar-table">
                         <template if:true={products}>
                             <table>
                                 <thead id="product-body">
@@ -179,8 +179,22 @@
 
                 <lightning-card title="Proceso Concluido Exitosamente...!" icon-name="utility:user"
                     class="final-message">
-
-
+                    <div class="calendar-table">
+                        <table>
+                            <thead id="table-result">
+                                <tr>
+                                    <th>Fecha Entrega</th>
+                                    <th>Fecha Armado</th>
+                                </tr>
+                            </thead>
+                            <tbody class="product-dates">
+                                <tr>
+                                    <td>{datesSelected}</td>
+                                    <td>{datesSelectedArmado}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="final-message">Ya puedes Cerrar y tomarte un café 😎</div>
                     <div class="content-btn-lower">
                         <lightning-button label="Cerrar" onclick={refreshPage} class="btn-lower"></lightning-button>

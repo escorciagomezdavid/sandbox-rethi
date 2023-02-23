@@ -138,9 +138,10 @@ public with sharing class CitaOp {
             objson.put('origenOper','SALESFORCE');
             objson.put('userOper', userOperacion);
             String body = String.valueOf(JSON.Serialize(objson));        
-            HttpResponse response2 =JamarConsumoHTTP.callServiceExternal(url, body, 'POST',null);
+            HttpResponse response2 =JamarConsumoHTTP.callServiceExternalWithTimeOut(url, body, 'POST','2500');
             Answerx.add(response2.getBody());
             String data = Answerx[0];
+            System.debug(data);
             Map <String, Object> jsonParseds = (Map<String, Object>) JSON.deserializeUntyped(data);
         }catch(Exception e){
             System.debug(e);
@@ -178,14 +179,18 @@ public with sharing class CitaOp {
             HttpResponse response2 = JamarConsumoHTTP.callServiceExternal(url, null, 'GET',null);
             Answerx.add(response2.getBody());
             String data = Answerx[0];
+            System.debug(data);
             CitaOp jsonParseds = (CitaOp) System.JSON.deserialize(data, CitaOp.class);
-            if(jsonParseds.data[0].CITA_ENTREGA !='' && jsonParseds.data[0].CITA_ENTREGA != null){
+            System.debug(jsonParseds);
+            if(jsonParseds.data[0].CITA_ENTREGA !='' || jsonParseds.data[0].CITA_ENTREGA != null){
+                System.debug('ENTRE');
                 updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario);
-                Case casosAbiertos = [SELECT Id,Status FROM Case WHERE Oportunidad__c =:identificacion[0].Id];
-                if(casosAbiertos!= null){
+                list<Case> casosAbiertos = [SELECT Id,Status FROM Case WHERE Oportunidad__c =:identificacion[0].Id];
+                System.debug(casosAbiertos);
+                if(!casosAbiertos.isEmpty()){
                     System.debug(casosAbiertos);
-                    casosAbiertos.Status='Cerrado';
-                    update casosAbiertos;
+                    casosAbiertos[0].Status='Cerrado';
+                    update casosAbiertos[0];
                 }
                 return 'CITA ASIGNADA EXITOSAMENTE';
             }else{
@@ -314,6 +319,15 @@ public with sharing class CitaOp {
 
                                             String body;
                                             List <String> Answerx = new list<String>();
+                                            List<String> fechaList = new List<String>();
+                                            for(String st : citaArmado.split('-')){         
+                                                fechaList.add(st);
+                                            }
+                                            String ano = fechaList[0];
+                                            String mes = fechaList[1];
+                                            String dia = fechaList[2];
+                                    
+                                            String mydate = ano + '' + mes + ''+dia;
 
                                             /* Asignacion de datos de la Op a las variables**/
                                             List<String> datosOp = new List<String>();
@@ -325,13 +339,13 @@ public with sharing class CitaOp {
                                             String periodoOp = datosOp[2];
                                             String Op = datosOp[3];
                                             String endPoint = Endpoint__mdt.getInstance('Asignacion_Cita_Armado').URL__c;
-                                            String url= endPoint+ '/'+empresa+'/assembly-express';
+                                            String url= endPoint+empresa+'/assembly-express';
 
                                             try{
                                                 Map<String, Object> objson = new Map<String, Object>();
                                                 objson.put('country',codigoPais);
                                                 objson.put('codeModel','02');
-                                                objson.put('date', citaArmado);
+                                                objson.put('date', mydate);
                                                 objson.put('rem',Op);
                                                 objson.put('agency', agencia);
                                                 objson.put('tecnico',tecnico);
@@ -339,7 +353,7 @@ public with sharing class CitaOp {
                                                 objson.put('unitType', 'J1');
                                                 body = String.valueOf(JSON.Serialize(objson));
                                                 System.debug(body);
-                                                HttpResponse response =JamarConsumoHTTP.callServiceExternal(url, body, 'POST',null);
+                                                HttpResponse response =JamarConsumoHTTP.callServiceExternal(url, body, 'PUT',null);
                                                 Answerx.add(response.getbody());
                                                 String data = Answerx[0];
                                                 Map <String, Object> jsonParseds = (Map<String, Object>) JSON.deserializeUntyped(data);

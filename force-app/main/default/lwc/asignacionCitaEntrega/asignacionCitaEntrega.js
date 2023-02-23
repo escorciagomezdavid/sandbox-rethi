@@ -18,8 +18,8 @@ const fields = [Listo_a_Factruar__c, CEmpresa__c, IdOP__c]
 
 let datesEntrega = [];
 let datesArmado = [];
-let datesSelected = "";
-let datesSelectedArmado = "";
+// let datesSelected = "";
+// let datesSelectedArmado = "";
 let listoFact = false;
 let numeroMes = 1;
 let codPais = '';
@@ -44,6 +44,8 @@ let currentYearArmado = todayArmado.getFullYear();
 export default class AsignacionCitaEntrega extends LightningElement {
     @track currentScreen = 1;
     @track products;
+    @track datesSelected;
+    @track datesSelectedArmado;
     @track error;
     @track userId = Id;
     // @track datesEntrega;
@@ -109,35 +111,35 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     assignFechaEntrega() {
-        if (datesSelected) {
-            asignacionCitaEntregaOp({
-                idOp: getFieldValue(this.opportunity.data, IdOP__c),
-                citaEntrega: datesSelected,
-                userOperacion: this.userId
-            })
-                .then(result => {
-                    console.log(`result assignFechaEntrega: ${result}`);
+        if (this.datesSelected) {
+            // asignacionCitaEntregaOp({
+            //     idOp: getFieldValue(this.opportunity.data, IdOP__c),
+            //     citaEntrega: this.datesSelected,
+            //     userOperacion: this.userId
+            // })
+            //     .then(result => {
+            //         console.log(`result assignFechaEntrega: ${result}`);
 
-                    if (result === 'CITA ASIGNADA EXITOSAMENTE') {
-                        this.dispatchEvent(new ShowToastEvent({
-                            title: 'Success',
-                            message: result,
-                            variant: 'success'
-                        }));//--success, error
-                        this.nextScreen();
-                    } else if (result === 'CITA NO FUE ASIGNADA') {
-                        this.dispatchEvent(new ShowToastEvent({
-                            title: 'Error',
-                            message: result,
-                            variant: 'error'
-                        }));//--success, error
-                    }
+            //         if (result === 'CITA ASIGNADA EXITOSAMENTE') {
+            //             this.dispatchEvent(new ShowToastEvent({
+            //                 title: 'Success',
+            //                 message: result,
+            //                 variant: 'success'
+            //             }));//--success, error
+            //             this.nextScreen();
+            //         } else if (result === 'CITA NO FUE ASIGNADA') {
+            //             this.dispatchEvent(new ShowToastEvent({
+            //                 title: 'Error',
+            //                 message: result,
+            //                 variant: 'error'
+            //             }));//--success, error
+            //         }
 
-                })
-                .catch(error => {
-                    this.error = error;
-                });
-            // this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
+            //     })
+            //     .catch(error => {
+            //         this.error = error;
+            //     });
+            this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
         } else {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
@@ -149,11 +151,11 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     loadCalendarioArmado() {
-        this.codPais = getFieldValue(this.opportunity.data, CEmpresa__c) === 'JA' ? '01' : '02'; //--codigoPais
+        codPais = getFieldValue(this.opportunity.data, CEmpresa__c) === 'JA' ? '01' : '02'; //--codigoPais
         calendarioArmado({
             idOp: getFieldValue(this.opportunity.data, IdOP__c),
-            fechaEntrega: datesSelected,
-            pais: this.codPais
+            fechaEntrega: this.datesSelected,
+            pais: codPais
         })
             .then(result => {
                 console.log(`result loadCalendarioArmado: `);
@@ -161,8 +163,8 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 datesArmado = this.removeTwoPoints(result[0].fechas);
                 console.log(`datesArmado: ${datesArmado}`);
                 currentMonth = this.getNumeroMes(datesArmado);
-                this.tecnico = result[0].tecnico; //--tecnico
-                this.codRecurso = result[0].recurso; //--recurso
+                tecnico = result[0].tecnico; //--tecnico
+                codRecurso = result[0].recurso; //--recurso
                 this.renderCalendarArmado();
             })
             .catch(error => {
@@ -171,37 +173,37 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     assignFechaArmado() {
-        console.log(`${this.codPais} ${this.datesSelectedArmado} ${this.tecnico} ${this.codRecurso}`);
-        if (this.codPais && this.datesSelectedArmado && this.tecnico && this.codRecurso) {
-            asignacionArmado({
-                idOp: getFieldValue(this.opportunity.data, IdOP__c),
-                codigoPais: this.codPais,
-                citaArmado: this.datesSelectedArmado,
-                tecnico: this.tecnico,
-                codRecurso: this.codRecurso
-            })
-                .then(result => {
-                    console.log(`result assignFechaArmado: ${result}`);
-                    if (result === 'CITA ASIGNADA EXITOSAMENTE') {
-                        this.dispatchEvent(new ShowToastEvent({
-                            title: 'Success',
-                            message: result,
-                            variant: 'success'
-                        }));//--success, error
-                        this.nextScreen();
-                    } else if (result === 'CITA NO FUE ASIGNADA') {
-                        this.dispatchEvent(new ShowToastEvent({
-                            title: 'Error',
-                            message: result,
-                            variant: 'error'
-                        }));//--success, error
-                    }
+        console.log(`${codPais} ${this.datesSelectedArmado} ${tecnico} ${codRecurso}`);
+        if (codPais && this.datesSelectedArmado && tecnico && codRecurso) {
+            // asignacionArmado({
+            //     idOp: getFieldValue(this.opportunity.data, IdOP__c),
+            //     codigoPais: codPais,
+            //     citaArmado: this.datesSelectedArmado,
+            //     tecnico: tecnico,
+            //     codRecurso: codRecurso
+            // })
+            //     .then(result => {
+            //         console.log(`result assignFechaArmado: ${result}`);
+            //         if (result === 'CITA ASIGNADA EXITOSAMENTE') {
+            //             this.dispatchEvent(new ShowToastEvent({
+            //                 title: 'Success',
+            //                 message: result,
+            //                 variant: 'success'
+            //             }));//--success, error
+            //             this.nextScreen();
+            //         } else if (result === 'CITA NO FUE ASIGNADA') {
+            //             this.dispatchEvent(new ShowToastEvent({
+            //                 title: 'Error',
+            //                 message: result,
+            //                 variant: 'error'
+            //             }));//--success, error
+            //         }
 
-                })
-                .catch(error => {
-                    this.error = error;
-                });
-            // this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
+            //     })
+            //     .catch(error => {
+            //         this.error = error;
+            //     });
+            this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
         } else {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
@@ -285,11 +287,11 @@ export default class AsignacionCitaEntrega extends LightningElement {
                         cell.style.cursor = 'pointer';
                         // eslint-disable-next-line no-loop-func
                         cell.addEventListener('click', () => {
-                            datesSelected = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (cell.textContent)).slice(-2)}`;
-                            console.log(datesSelected);
+                            this.datesSelected = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (cell.textContent)).slice(-2)}`;
+                            console.log(this.datesSelected);
                             this.dispatchEvent(new ShowToastEvent({
-                                title: `${datesSelected}`,
-                                message: `La Fecha Seleccionada es: ${datesSelected}`,
+                                title: `${this.datesSelected}`,
+                                message: `La Fecha Seleccionada es: ${this.datesSelected}`,
                                 variant: 'success'
                             }));
                         });
