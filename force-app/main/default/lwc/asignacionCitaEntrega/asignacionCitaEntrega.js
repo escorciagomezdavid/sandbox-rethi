@@ -71,6 +71,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
             idOportunidad: this.pageRef.attributes.recordId
         })
             .then(result => {
+                console.log(`result products:`);
                 console.log(result);
                 this.products = result;
             })
@@ -380,6 +381,8 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
         } else if (this.currentScreen === 3) {
             this.loadCitasEntrega();
+        } else if (this.currentScreen === 5) {
+            this.loadCalendarioArmado();
         }
     }
 
