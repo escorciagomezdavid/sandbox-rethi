@@ -4,6 +4,7 @@ import envioProductosEntrega from '@salesforce/apex/lwcCitaOp.envioProductosEntr
 import calendarioCitasEntrega from '@salesforce/apex/lwcCitaOp.calendarioCitasEntrega';
 import asignacionCitaEntregaOp from '@salesforce/apex/lwcCitaOp.asignacionCitaEntregaOp';
 import calendarioArmado from '@salesforce/apex/lwcCitaOp.calendarioArmado';
+import AsignacionArmado from '@salesforce/apex/lwcCitaOp.AsignacionArmado';
 import Id from '@salesforce/user/Id';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -16,11 +17,14 @@ import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 const fields = [Listo_a_Factruar__c, CEmpresa__c, IdOP__c]
 
 let datesEntrega = [];
-let datesArmado = ["2023-04-13", "2023-04-28"];
+let datesArmado = [];
 let datesSelected = "";
 let datesSelectedArmado = "";
 let listoFact = false;
 let numeroMes = 1;
+let codPais = '';
+let tecnico = '';
+let codRecurso = '';
 
 // Get today's date
 const today = new Date();
@@ -67,13 +71,21 @@ export default class AsignacionCitaEntrega extends LightningElement {
         return numeroMes;
     }
 
+    removeTwoPoints(tuple) {
+        for (let i = 0; i < tuple.length; i++) {
+            tuple[i] = tuple[i].replace(':', '');
+        }
+        return tuple;
+    }
+
     loadProducts() {
         envioProductosEntrega({
             idOportunidad: this.pageRef.attributes.recordId
         })
             .then(result => {
-                console.log(result);
                 this.products = result;
+                console.log(`result:`);
+                console.log(result);
             })
             .catch(error => {
                 this.error = error;
@@ -81,7 +93,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     loadCitasEntrega() {
-        console.log(`Super`);
         calendarioCitasEntrega({
             empresa: getFieldValue(this.opportunity.data, CEmpresa__c),
             idOp: getFieldValue(this.opportunity.data, IdOP__c)
@@ -129,18 +140,56 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     loadCalendarioArmado() {
+        this.codPais = getFieldValue(this.opportunity.data, CEmpresa__c) === 'JA' ? '01' : '02'; //--codigoPais
         calendarioArmado({
             idOp: getFieldValue(this.opportunity.data, IdOP__c),
             fechaEntrega: datesSelected,
-            pais: getFieldValue(this.opportunity.data, CEmpresa__c) === 'JA' ? '01' : '02'
+            pais: this.codPais
         })
             .then(result => {
                 console.log(`result loadCalendarioArmado: `);
                 console.log(result);
+                datesArmado = this.removeTwoPoints(result[0].fechas);
+                console.log(`datesArmado: ${datesArmado}`);
+                currentMonth = this.getNumeroMes(datesArmado);
+                this.tecnico = result[0].tecnico; //--tecnico
+                this.codRecurso = result[0].recurso; //--recurso
+                this.renderCalendarArmado();
             })
             .catch(error => {
                 this.error = error;
             });
+    }
+
+    assignFechaArmado() {
+        console.log(`${this.codPais} ${this.datesSelectedArmado} ${this.tecnico} ${this.codRecurso}`);
+        if (this.codPais && this.datesSelectedArmado && this.tecnico && this.codRecurso) {
+            // asignacionCitaEntregaOp({
+            //     idOp: getFieldValue(this.opportunity.data, IdOP__c),
+            //     citaEntrega: datesSelected,
+            //     userOperacion: this.userId
+            // })
+            //     .then(result => {
+            //         console.log(`result assignFechaEntrega: ${result}`);
+            //         this.dispatchEvent(new ShowToastEvent({
+            //             title: 'Error',
+            //             message: result,
+            //             variant: 'destructive'
+            //         }));
+            //         this.nextScreen();
+
+            //     })
+            //     .catch(error => {
+            //         this.error = error;
+            //     });
+            this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
+        } else {
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: 'Debe Seleccionar una Fecha de Armado',
+                variant: 'error'
+            }));
+        }
     }
 
     renderCalendar() {
@@ -190,7 +239,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
         // Clear the calendar body
         calendarBody.textContent = '';
-
+        console.log(`datesEntrega: ${datesEntrega}`);
         // Create the calendar rows
         for (let i = 0; i < 6; i++) {
             // Create a table row
@@ -208,6 +257,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 } else if (currentDay <= numDaysInMonth) {
                     cell.textContent = currentDay;
                     let currentDate = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (currentDay)).slice(-2)}`;
+                    console.log(`currentDate: ${currentDate}`);
                     cell.style.alignContent = "center";
                     if (datesEntrega.includes(currentDate)) {
                         cell.style.border = "solid";
@@ -245,7 +295,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     renderCalendarArmado() {
 
-        this.loadCalendarioArmado();//-- Este metodo hay que sacarlo de aqui porque cada vez que se renderiza el calendario consume el servicio
+        // this.loadCalendarioArmado();//-- Este metodo hay que sacarlo de aqui porque cada vez que se renderiza el calendario consume el servicio
 
         // Get reference to the calendar header
         const calendarHeaderArmado = this.template.querySelector(".month-year-armado");
@@ -291,6 +341,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
         // Clear the calendar body
         calendarBodyArmado.textContent = '';
 
+        console.log(`datesArmado: ${datesArmado}`);
         // Create the calendar rowArmados
         for (let i = 0; i < 6; i++) {
             // Create a table rowArmado
@@ -308,6 +359,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 } else if (currentDayArmado <= numDaysInMonthArmado) {
                     cellArmado.textContent = currentDayArmado;
                     let currentDateArmado = `${currentYearArmado}-${("0" + (currentMonthArmado + 1)).slice(-2)}-${("0" + (currentDayArmado)).slice(-2)}`;
+                    console.log(`currentDateArmado: ${currentDateArmado}`);
                     cellArmado.style.alignContent = "center";
                     if (datesArmado.includes(currentDateArmado)) {
                         cellArmado.style.border = "solid";
@@ -316,8 +368,13 @@ export default class AsignacionCitaEntrega extends LightningElement {
                         cellArmado.style.cursor = 'pointer';
                         // eslint-disable-next-line no-loop-func
                         cellArmado.addEventListener('click', () => {
-                            datesSelectedArmado = `${currentYearArmado}-${("0" + (currentMonthArmado + 1)).slice(-2)}-${("0" + (cellArmado.textContent)).slice(-2)}`;
-                            console.log(datesSelectedArmado);
+                            this.datesSelectedArmado = `${currentYearArmado}-${("0" + (currentMonthArmado + 1)).slice(-2)}-${("0" + (cellArmado.textContent)).slice(-2)}`;
+                            console.log(this.datesSelectedArmado);//--citaArmado
+                            this.dispatchEvent(new ShowToastEvent({
+                                title: `${this.datesSelectedArmado}`,
+                                message: `La Fecha Seleccionada es: ${this.datesSelectedArmado}`,
+                                variant: 'success'
+                            }));
                         });
                     } else {
                         cellArmado.style.color = "black";
@@ -359,12 +416,8 @@ export default class AsignacionCitaEntrega extends LightningElement {
         return this.currentScreen === 5;
     }
 
-    get showScreen6() {
-        return this.currentScreen === 6;
-    }
-
     get showScreenError() {
-        return this.currentScreen === 7;
+        return this.currentScreen === 6;
     }
 
     nextScreen() {
@@ -375,13 +428,14 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 this.loadProducts();
                 this.currentScreen = 2;
             } else {
-                this.currentScreen = 7;
+                this.currentScreen = 6;
                 console.log("NO está listo a Facturar");
-                // this.template.querySelector('.lc-listo-facturar-false').style.display = 'block';
             }
 
         } else if (this.currentScreen === 3) {
             this.loadCitasEntrega();
+        } else if (this.currentScreen === 4) {
+            this.loadCalendarioArmado();
         }
     }
 
@@ -395,7 +449,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     prevMonth() {
-        console.log("Hola Mundo Desde prevMonth");
         currentMonth--;
         if (currentMonth < 0) {
             currentMonth = 11;
@@ -405,7 +458,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     nextMonth() {
-        console.log("Hola Mundo Desde nextMonth");
         currentMonth++;
         if (currentMonth > 11) {
             currentMonth = 0;
@@ -415,7 +467,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     prevMonthArmado() {
-        console.log("Hola Mundo Desde prevMonth");
         currentMonthArmado--;
         if (currentMonthArmado < 0) {
             currentMonthArmado = 11;
@@ -425,7 +476,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     nextMonthArmado() {
-        console.log("Hola Mundo Desde nextMonth");
         currentMonthArmado++;
         if (currentMonthArmado > 11) {
             currentMonthArmado = 0;

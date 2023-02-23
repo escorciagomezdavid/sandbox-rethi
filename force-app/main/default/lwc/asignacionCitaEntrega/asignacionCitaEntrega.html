@@ -7,7 +7,7 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="Productos de la OP" icon-name="utility:user" class="lc-listo-facturar-true">
+                <lightning-card title="Productos de la OP" icon-name="utility:cart" class="lc-listo-facturar-true">
                     <div class="btn-close-modal">
                         <lightning-button label="❌" onclick={closeModal}></lightning-button>
                     </div>
@@ -19,6 +19,7 @@
                                         <th>Codigo</th>
                                         <th>Descripcion</th>
                                         <th>Cantidad</th>
+                                        <th>Url</th>
                                     </tr>
                                 </thead>
                                 <tbody class="product-dates">
@@ -27,6 +28,8 @@
                                             <td>{product.ProductCode}</td>
                                             <td class="td-align-left">{product.Product2.Description}</td>
                                             <td>{product.Quantity}</td>
+                                            <td class="td-align-left"><a href={product.Product2.DisplayUrl}
+                                                    target="_blank">Ver</a></td>
                                         </tr>
                                     </template>
                                 </tbody>
@@ -108,7 +111,7 @@
         <section class="slds-backdrop slds-backdrop_open"></section>
     </template>
 
-    <template if:true={showScreen4}>
+    <!-- <template if:true={showScreen4}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
@@ -125,17 +128,18 @@
             </section>
         </section>
         <section class="slds-backdrop slds-backdrop_open"></section>
-    </template>
+    </template> -->
 
-    <template if:true={showScreen5}>
+    <template if:true={showScreen4}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
                 <lightning-card class="c-lightning-card" title="Fechas de Armado Disponibles" icon-name="utility:event">
-
-                    <div id="calendar-armado" class="calendar-table" onrender={renderCalendarArmado}>
+                    <div class="btn-close-modal">
+                        <lightning-button label="❌" onclick={closeModal}></lightning-button>
+                    </div>
+                    <div id="calendar-armado" class="calendar-table">
                         <div>
-                            <lightning-button label="🔁" onclick={renderCalendarArmado}></lightning-button>
                             <h2 class="month-year-armado" lwc:dom="manual"></h2>
                         </div>
                         <table>
@@ -157,9 +161,10 @@
                             <lightning-button class="next-month" label=">" onclick={nextMonthArmado}></lightning-button>
                         </div>
                     </div>
+                    <template if:true={datesArmado}></template>
                     <div class="content-btn-lower">
                         <lightning-button class="btn-lower" label="Asignar Fecha Armado"
-                            onclick={nextScreen}></lightning-button>
+                            onclick={assignFechaArmado}></lightning-button>
                     </div>
                 </lightning-card>
 
@@ -168,14 +173,15 @@
         <section class="slds-backdrop slds-backdrop_open"></section>
     </template>
 
-    <template if:true={showScreen6}>
+    <template if:true={showScreen5}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="Fecha de Armado Asignada Exitosamente...!" icon-name="utility:user">
+                <lightning-card title="Proceso Concluido Exitosamente...!" icon-name="utility:user"
+                    class="final-message">
 
 
-                    <div style="padding: 10px">{currentPageReference}</div>
+                    <div class="final-message">Ya puedes Cerrar y tomarte un café 😎</div>
                     <div class="content-btn-lower">
                         <lightning-button label="Cerrar" onclick={refreshPage} class="btn-lower"></lightning-button>
                     </div>
