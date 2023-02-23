@@ -20,6 +20,7 @@ let datesArmado = ["2023-04-13", "2023-04-28"];
 let datesSelected = "";
 let datesSelectedArmado = "";
 let listoFact = false;
+let numeroMes = 1;
 
 // Get today's date
 const today = new Date();
@@ -41,7 +42,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
     @track products;
     @track error;
     @track userId = Id;
-    // @track datesEntrega;
 
     @api recordId;
     @wire(getRecord, { recordId: '$recordId', fields }) opportunity;
@@ -56,6 +56,14 @@ export default class AsignacionCitaEntrega extends LightningElement {
         listoFact = getFieldValue(this.opportunity.data, Listo_a_Factruar__c);
         console.log("Listo a facturar: " + listoFact);
         return listoFact;
+    }
+
+    getNumeroMes(tuple) {
+        if (tuple) {
+            const primerElemento = new Date(tuple[0]);
+            numeroMes = primerElemento.getMonth();
+        }
+        return numeroMes;
     }
 
     loadProducts() {
@@ -78,8 +86,8 @@ export default class AsignacionCitaEntrega extends LightningElement {
             idOp: getFieldValue(this.opportunity.data, IdOP__c)
         })
             .then(result => {
-                console.log(`result of loadCitasEntrega: ${result}`);
                 datesEntrega = result;
+                currentMonth = this.getNumeroMes(result);
                 this.renderCalendar();
             })
             .catch(error => {
@@ -112,7 +120,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
                 message: 'Debe Seleccionar una Fecha de Entrega',
-                variant: 'destructive'
+                variant: 'error'
             }));
         }
 
@@ -135,7 +143,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     renderCalendar() {
 
-        console.log(`Render Calendar`);
+        console.log(`Render Calendar: Mes Actual: ${currentMonth}`);
 
         // Get reference to the calendar header
         const calendarHeader = this.template.querySelector(".month-year");
@@ -208,6 +216,11 @@ export default class AsignacionCitaEntrega extends LightningElement {
                         cell.addEventListener('click', () => {
                             datesSelected = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (cell.textContent)).slice(-2)}`;
                             console.log(datesSelected);
+                            this.dispatchEvent(new ShowToastEvent({
+                                title: `${datesSelected}`,
+                                message: `La Fecha Seleccionada es: ${datesSelected}`,
+                                variant: 'success'
+                            }));
                         });
                     } else {
                         cell.style.color = "black";
