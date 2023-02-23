@@ -182,9 +182,11 @@ public with sharing class CitaOp {
             if(jsonParseds.data[0].CITA_ENTREGA !='' && jsonParseds.data[0].CITA_ENTREGA != null){
                 updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario);
                 Case casosAbiertos = [SELECT Id,Status FROM Case WHERE Oportunidad__c =:identificacion[0].Id];
-                System.debug(casosAbiertos);
-                casosAbiertos.Status='Cerrado';
-                update casosAbiertos;
+                if(casosAbiertos!= null){
+                    System.debug(casosAbiertos);
+                    casosAbiertos.Status='Cerrado';
+                    update casosAbiertos;
+                }
                 return 'CITA ASIGNADA EXITOSAMENTE';
             }else{
                 Log__c log = new Log__c();
@@ -279,7 +281,6 @@ public with sharing class CitaOp {
                 DateTime dt = DateTime.newInstance(x.year(), x.month(),x.day());
                 String format = 'YYYY-MM-dd';
                 String fechas = dt.format(format);
-                System.debug(fechas);
                 value.add(fechas);
                                             
             }
@@ -344,7 +345,7 @@ public with sharing class CitaOp {
                                                 Map <String, Object> jsonParseds = (Map<String, Object>) JSON.deserializeUntyped(data);
                                                 String calendario = String.ValueOf(jsonParseds.get('calendar'));
                                                 if(calendario == 'OK'){
-                                                    return 'CITA ASIGNADA CON EXITO';
+                                                    return 'CITA ASIGNADA EXITOSAMENTE';
                                                 }else{
                                                     Log__c log = new Log__c();
                                                     log.ClassName__c = 'Asignar_Cita_Armado';

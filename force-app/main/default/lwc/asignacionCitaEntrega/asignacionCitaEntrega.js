@@ -4,7 +4,7 @@ import envioProductosEntrega from '@salesforce/apex/lwcCitaOp.envioProductosEntr
 import calendarioCitasEntrega from '@salesforce/apex/lwcCitaOp.calendarioCitasEntrega';
 import asignacionCitaEntregaOp from '@salesforce/apex/lwcCitaOp.asignacionCitaEntregaOp';
 import calendarioArmado from '@salesforce/apex/lwcCitaOp.calendarioArmado';
-import AsignacionArmado from '@salesforce/apex/lwcCitaOp.AsignacionArmado';
+import asignacionArmado from '@salesforce/apex/lwcCitaOp.AsignacionArmado';
 import Id from '@salesforce/user/Id';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -110,25 +110,34 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     assignFechaEntrega() {
         if (datesSelected) {
-            // asignacionCitaEntregaOp({
-            //     idOp: getFieldValue(this.opportunity.data, IdOP__c),
-            //     citaEntrega: datesSelected,
-            //     userOperacion: this.userId
-            // })
-            //     .then(result => {
-            //         console.log(`result assignFechaEntrega: ${result}`);
-            //         this.dispatchEvent(new ShowToastEvent({
-            //             title: 'Error',
-            //             message: result,
-            //             variant: 'destructive'
-            //         }));
-            //         this.nextScreen();
+            asignacionCitaEntregaOp({
+                idOp: getFieldValue(this.opportunity.data, IdOP__c),
+                citaEntrega: datesSelected,
+                userOperacion: this.userId
+            })
+                .then(result => {
+                    console.log(`result assignFechaEntrega: ${result}`);
 
-            //     })
-            //     .catch(error => {
-            //         this.error = error;
-            //     });
-            this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
+                    if (result === 'CITA ASIGNADA EXITOSAMENTE') {
+                        this.dispatchEvent(new ShowToastEvent({
+                            title: 'Success',
+                            message: result,
+                            variant: 'success'
+                        }));//--success, error
+                        this.nextScreen();
+                    } else if (result === 'CITA NO FUE ASIGNADA') {
+                        this.dispatchEvent(new ShowToastEvent({
+                            title: 'Error',
+                            message: result,
+                            variant: 'error'
+                        }));//--success, error
+                    }
+
+                })
+                .catch(error => {
+                    this.error = error;
+                });
+            // this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
         } else {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
@@ -164,25 +173,35 @@ export default class AsignacionCitaEntrega extends LightningElement {
     assignFechaArmado() {
         console.log(`${this.codPais} ${this.datesSelectedArmado} ${this.tecnico} ${this.codRecurso}`);
         if (this.codPais && this.datesSelectedArmado && this.tecnico && this.codRecurso) {
-            // asignacionCitaEntregaOp({
-            //     idOp: getFieldValue(this.opportunity.data, IdOP__c),
-            //     citaEntrega: datesSelected,
-            //     userOperacion: this.userId
-            // })
-            //     .then(result => {
-            //         console.log(`result assignFechaEntrega: ${result}`);
-            //         this.dispatchEvent(new ShowToastEvent({
-            //             title: 'Error',
-            //             message: result,
-            //             variant: 'destructive'
-            //         }));
-            //         this.nextScreen();
+            asignacionArmado({
+                idOp: getFieldValue(this.opportunity.data, IdOP__c),
+                codigoPais: this.codPais,
+                citaArmado: this.datesSelectedArmado,
+                tecnico: this.tecnico,
+                codRecurso: this.codRecurso
+            })
+                .then(result => {
+                    console.log(`result assignFechaArmado: ${result}`);
+                    if (result === 'CITA ASIGNADA EXITOSAMENTE') {
+                        this.dispatchEvent(new ShowToastEvent({
+                            title: 'Success',
+                            message: result,
+                            variant: 'success'
+                        }));//--success, error
+                        this.nextScreen();
+                    } else if (result === 'CITA NO FUE ASIGNADA') {
+                        this.dispatchEvent(new ShowToastEvent({
+                            title: 'Error',
+                            message: result,
+                            variant: 'error'
+                        }));//--success, error
+                    }
 
-            //     })
-            //     .catch(error => {
-            //         this.error = error;
-            //     });
-            this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
+                })
+                .catch(error => {
+                    this.error = error;
+                });
+            // this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
         } else {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
