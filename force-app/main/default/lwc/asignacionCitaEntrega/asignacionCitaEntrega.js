@@ -20,6 +20,7 @@ let datesArmado = ["2023-04-13", "2023-04-28"];
 let datesSelected = "";
 let datesSelectedArmado = "";
 let listoFact = false;
+let numeroMes = 1;
 
 // Get today's date
 const today = new Date();
@@ -58,6 +59,14 @@ export default class AsignacionCitaEntrega extends LightningElement {
         return listoFact;
     }
 
+    getNumeroMes(tuple) {
+        if (tuple) {
+            const primerElemento = new Date(tuple[0]);
+            numeroMes = primerElemento.getMonth();
+        }
+        return numeroMes;
+    }
+
     loadProducts() {
         envioProductosEntrega({
             idOportunidad: this.pageRef.attributes.recordId
@@ -80,6 +89,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
             .then(result => {
                 console.log(`result of loadCitasEntrega: ${result}`);
                 datesEntrega = result;
+                currentMonth = this.getNumeroMes(result);
                 this.renderCalendar();
             })
             .catch(error => {
@@ -112,7 +122,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
                 message: 'Debe Seleccionar una Fecha de Entrega',
-                variant: 'destructive'
+                variant: 'error'
             }));
         }
 
@@ -208,6 +218,11 @@ export default class AsignacionCitaEntrega extends LightningElement {
                         cell.addEventListener('click', () => {
                             datesSelected = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (cell.textContent)).slice(-2)}`;
                             console.log(datesSelected);
+                            this.dispatchEvent(new ShowToastEvent({
+                                title: `${datesSelected}`,
+                                message: `La Fecha Seleccionada es: ${datesSelected}`,
+                                variant: 'success'
+                            }));
                         });
                     } else {
                         cell.style.color = "black";
