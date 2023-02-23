@@ -14,12 +14,13 @@ Historial de Modificaciones:
 
 *************************************************************************/
 public with sharing class lwcCitaOp {
+    
     public lwcCitaOp() {}
 
        
     @AuraEnabled
     public static list<OpportunityLineItem> envioProductosEntrega(Id idOportunidad){
-
+        System.debug('envioProductosEntrega: ' + idOportunidad);
         try{
             List<OpportunityLineItem> op= [SELECT Product2.Description,Quantity,ProductCode, Display_Url__c,Product2.Armable__c from OpportunityLineItem where OpportunityId =: idOportunidad];
             return op;
@@ -30,6 +31,7 @@ public with sharing class lwcCitaOp {
 
     @AuraEnabled
     public static list<string> calendarioCitasEntrega(String empresa, String idOp){
+        System.debug('calendarioCitasEntrega: ' + empresa + ' ' + idOp);
         try {
             list<string> calendario = new list<String>();
             calendario = CitaOp.calendarioCitaEntrega(empresa, idOp, 'OP');
@@ -45,6 +47,29 @@ public with sharing class lwcCitaOp {
         try {
             CitaOp.asignacionCitaOp(idOp, citaEntrega, userOperacion);
             String citaAsignada = CitaOp.validacionCitaEntrega(idOp, citaEntrega, userOperacion);
+            return citaAsignada;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static List<CitaOp> calendarioArmado(String idOp, String fechaEntrega, String pais){
+        System.debug('calendarioArmado: ' + idOp + ' ' + fechaEntrega + ' ' + pais);
+        try {
+            list<CitaOp> calendario = new list<CitaOp>();
+            calendario = CitaOp.calendarioCitaArmado(idOp, fechaEntrega, pais);
+            return calendario;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static String AsignacionArmado(String idOp, String codigoPais, String citaArmado, String tecnico, String codRecurso){
+        System.debug('AsignacionArmado: ' + idOp + ' ' + codigoPais + ' ' + citaArmado + ' ' + tecnico + ' ' + codRecurso);
+        try {
+            String citaAsignada = CitaOp.asignacionCitaArmado(idOp, codigoPais, citaArmado, tecnico, codRecurso);
             return citaAsignada;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());

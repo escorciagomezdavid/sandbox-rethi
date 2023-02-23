@@ -9,10 +9,6 @@
 
                 <lightning-card title="Productos de la OP" icon-name="utility:user" class="lc-listo-facturar-true">
                     <div class="calendar-table" onrender={renderCalendar}>
-                        <div class="content-btn-lower">
-                            <lightning-button label="Obtener Info de Productos" onclick={loadProducts}
-                                class="btn-lower"></lightning-button>
-                        </div>
                         <template if:true={products}>
                             <table>
                                 <thead id="product-body">
@@ -71,14 +67,11 @@
                 <lightning-card class="c-lightning-card" title="Fechas de Entrega Disponibles"
                     icon-name="utility:event">
 
-                    <div id="calendar" class="calendar-table" onrender={renderCalendar}>
-                        <div>
-                            <lightning-button label="🔁" onclick={renderCalendar}></lightning-button>
-                            <h2 class="month-year" lwc:dom="manual"></h2>
-                        </div>
+                    <div id="calendar" class="calendar-table">
                         <div>
                             <h2 class="month-year" lwc:dom="manual"></h2>
                         </div>
+
                         <table>
                             <thead id="calendar-body">
                                 <tr>
@@ -98,6 +91,7 @@
                             <lightning-button class="next-month" label=">" onclick={nextMonth}></lightning-button>
                         </div>
                     </div>
+                    <template if:true={datesEntrega}></template>
                     <div class="content-btn-lower">
                         <lightning-button class="btn-lower" label="Asignar Fecha Entrega"
                             onclick={assignFechaEntrega}></lightning-button>
