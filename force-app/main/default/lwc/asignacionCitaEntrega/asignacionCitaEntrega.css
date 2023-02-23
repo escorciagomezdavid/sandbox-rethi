@@ -86,14 +86,13 @@ lightning-card {
     text-align: center;
 }
 
-/* .lc-listo-facturar-false {
-    text-align: center;
-    color: red;
-    display: none;
-} */
-
 .td-align-left {
     text-align: left;
     width: 1%;
     white-space: nowrap;
+}
+
+.btn-close-modal {
+    text-align: right;
+    padding: 10px;
 }

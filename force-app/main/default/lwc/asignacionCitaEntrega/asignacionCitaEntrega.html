@@ -8,6 +8,9 @@
             <section class="slds-modal__container">
 
                 <lightning-card title="Productos de la OP" icon-name="utility:user" class="lc-listo-facturar-true">
+                    <div class="btn-close-modal">
+                        <lightning-button label="❌" onclick={closeModal}></lightning-button>
+                    </div>
                     <div class="calendar-table" onrender={renderCalendar}>
                         <template if:true={products}>
                             <table>
@@ -66,7 +69,9 @@
 
                 <lightning-card class="c-lightning-card" title="Fechas de Entrega Disponibles"
                     icon-name="utility:event">
-
+                    <div class="btn-close-modal">
+                        <lightning-button label="❌" onclick={closeModal}></lightning-button>
+                    </div>
                     <div id="calendar" class="calendar-table">
                         <div>
                             <h2 class="month-year" lwc:dom="manual"></h2>
@@ -100,7 +105,7 @@
 
             </section>
         </section>
-        <section class="slds-backdrop slds-backdrop_open" onload={renderCalendar}></section>
+        <section class="slds-backdrop slds-backdrop_open"></section>
     </template>
 
     <template if:true={showScreen4}>
