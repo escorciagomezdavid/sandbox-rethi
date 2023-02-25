@@ -57,10 +57,10 @@ public with sharing class lwcCitaOp {
     }
 
     @AuraEnabled
-    public static String asignacionCitaEntregaOp(String idOp, String citaEntrega,String userOperacion){
+    public static String asignacionCitaEntregaOp(String idOp, String citaEntrega,String userOperacion,Boolean reasignacion){
         try {
             CitaOp.asignacionCitaOp(idOp, citaEntrega, userOperacion);
-            String citaAsignada = CitaOp.validacionCitaEntrega(idOp, citaEntrega, userOperacion);
+            String citaAsignada = CitaOp.validacionCitaEntrega(idOp, citaEntrega, userOperacion,reasignacion);
             return citaAsignada;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -81,10 +81,10 @@ public with sharing class lwcCitaOp {
 
     @AuraEnabled
     public static String AsignacionArmado(String idOp, String codigoPais, String citaArmado, String tecnico,
-                                            String codRecurso){
+                                            String codRecurso, Boolean reasignacion){
 
         try {
-            String citaAsignada = CitaOp.asignacionCitaArmado(idOp, codigoPais, citaArmado, tecnico, codRecurso);
+            String citaAsignada = CitaOp.asignacionCitaArmado(idOp, codigoPais, citaArmado, tecnico, codRecurso, reasignacion);
             return citaAsignada;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());

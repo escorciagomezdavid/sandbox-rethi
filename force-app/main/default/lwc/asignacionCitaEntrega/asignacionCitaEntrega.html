@@ -52,7 +52,8 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="La Oportunidad No se encuentra Lista a Facturar" class="lc-listo-facturar-false">
+                <lightning-card title="NO Lista Facturar" class="lc-listo-facturar-false">
+                    <h2 class="final-message">La Oportunidad No se encuentra Lista a Facturar</h2>
                     <div class="content-btn-lower">
                         <lightning-button label="Cerrar" onclick={closeModal} class="btn-lower"></lightning-button>
                     </div>
@@ -70,8 +71,7 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card class="c-lightning-card" title="Fechas de Entrega Disponibles"
-                    icon-name="utility:event">
+                <lightning-card class="c-lightning-card" title="Entregas Disponibles" icon-name="utility:event">
                     <div class="btn-close-modal">
                         <lightning-button label="❌" onclick={closeModal}></lightning-button>
                     </div>
@@ -111,30 +111,33 @@
         <section class="slds-backdrop slds-backdrop_open"></section>
     </template>
 
-    <!-- <template if:true={showScreen4}>
+    <template if:true={showScreenReasignar}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="Fecha de Entrega Asignada Exitosamente...!" icon-name="utility:user">
-
-
-                    <div style="padding: 10px">{currentPageReference}</div>
+                <lightning-card title="OP Tiene Cita Asignada" class="lc-listo-facturar-false">
+                    <h2 class="final-message">Su Orden de Pedido ya tiene Cita Asignada ¿Desea Reasignarla?</h2>
                     <div class="content-btn-lower">
-                        <lightning-button label="Armado" onclick={nextScreen} class="btn-lower"></lightning-button>
-                    </div>
+                        <div>
+                            <lightning-button label="Si" onclick={reasignacion} class="btn-lower"></lightning-button>
+                            <lightning-button label="No" onclick={closeModal} class="btn-lower"></lightning-button>
+                        </div>
 
+                    </div>
                 </lightning-card>
+
 
             </section>
         </section>
-        <section class="slds-backdrop slds-backdrop_open"></section>
-    </template> -->
+        <section class="slds-backdrop slds-backdrop_open" onclick={closeModal}></section>
+        <div></div>
+    </template>
 
     <template if:true={showScreen4}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card class="c-lightning-card" title="Fechas de Armado Disponibles" icon-name="utility:event">
+                <lightning-card class="c-lightning-card" title="Armados Disponibles" icon-name="utility:event">
                     <div class="btn-close-modal">
                         <lightning-button label="❌" onclick={closeModal}></lightning-button>
                     </div>
@@ -177,8 +180,7 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="Proceso Concluido Exitosamente...!" icon-name="utility:user"
-                    class="final-message">
+                <lightning-card title="Proceso Concluido Con Exito" icon-name="utility:user" class="final-message">
                     <div class="calendar-table">
                         <table>
                             <thead id="table-result">

@@ -84,6 +84,7 @@ lightning-card {
 .btn-lower {
     font-weight: bold;
     text-align: center;
+    margin: 10px;
 }
 
 .td-align-left {

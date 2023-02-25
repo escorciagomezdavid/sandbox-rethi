@@ -74,7 +74,7 @@ public with sharing class CitaOp {
                 if(empresa =='JA'){
                     log.Empresa__c = 'Colombia';
                 }else if(empresa =='JP'){
-                    log.Empresa__c = 'Panama';
+                    log.Empresa__c = 'Panamá';
                 }            
                 insert log;
                 dataFinalForComponent.add('ERROR EN EL CONSUMO');
@@ -93,7 +93,7 @@ public with sharing class CitaOp {
             if(empresa =='JA'){
                 log.Empresa__c = 'Colombia';
             }else if(empresa =='JP'){
-                log.Empresa__c = 'Panama';
+                log.Empresa__c = 'Panamá';
             }            
             insert log; 
             dataFinalForComponent.add('ERROR EN EL CONSUMO');
@@ -148,7 +148,7 @@ public with sharing class CitaOp {
         }
     }
 
-    public static String validacionCitaEntrega(String idOp, String citaEntrega, String usuario){
+    public static String validacionCitaEntrega(String idOp, String citaEntrega, String usuario, Boolean reasignacion){
 
         List<Opportunity> identificacion= [Select Id,Identificaci_n_del_cliente__c from Opportunity where IdOP__c = :idOp];
         String n_ide = identificacion[0].Identificaci_n_del_cliente__c;
@@ -315,7 +315,7 @@ public with sharing class CitaOp {
     }
 
     public static String asignacionCitaArmado(String idOp, String codigoPais, String citaArmado, String tecnico,
-                                            String codRecurso){
+                                            String codRecurso, Boolean reasignacion){
 
                                             String body;
                                             List <String> Answerx = new list<String>();
