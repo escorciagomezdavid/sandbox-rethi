@@ -217,7 +217,8 @@ public  class QuoteClass {
     
     public static List<Pricebook2> getListaPrecios(){
            List<Pricebook2> listaPrecios = new List<Pricebook2>();
-		   listaPrecios = [SELECT Id FROM Pricebook2 FOR UPDATE];
+		//    listaPrecios = [SELECT Id FROM Pricebook2 FOR UPDATE];
+           listaPrecios = [SELECT Id FROM Pricebook2];
            return listaPrecios;
     }
 
