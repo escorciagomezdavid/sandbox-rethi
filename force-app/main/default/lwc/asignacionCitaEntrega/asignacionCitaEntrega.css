@@ -60,6 +60,10 @@ th {
     width: 100%;
 }
 
+.product-dates{
+    width: 100%;
+}
+
 .calendar-dates-armado {
     width: 100%;
 }
@@ -89,6 +93,11 @@ lightning-card {
 
 .td-align-left {
     text-align: left;
+    font-size: small;
+}
+
+.td-font-samall{
+    font-size: small;
 }
 
 .btn-close-modal {

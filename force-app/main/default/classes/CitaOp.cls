@@ -1,7 +1,7 @@
 /*************************************************************************
 Nombre de la Clase:     CitaOp
 Versión :               1.0
-Fecha de Creación :     13/02/2022
+Fecha de Creación :     13/02/2023
 Funcionalidad :          Consulta de informacion de las diferentes fases del proceso de cita.
 Clase de Prueba:        
 
@@ -9,7 +9,7 @@ Historial de Modificaciones:
 -------------------------------------------------------------------------
 * Desarrollador        - Fecha –        Descripción
 * -----------------------------------------------------------------------
-* Daniela Sanchez        13/02/2022       Versión Original
+* Daniela Sanchez        13/02/2023       Versión Original
 * 
 
 *************************************************************************/
@@ -62,44 +62,22 @@ public with sharing class CitaOp {
                         }
                     }
                  return dataFinalForComponent;
+                }else{
+                    dataFinalForComponent.add('ERROR EN EL CONSUMO');
+                    return dataFinalForComponent;
                 }
             }else{
-                Log__c log = new Log__c();
-                log.ClassName__c = 'Consulta_Cita_Entrega';
-                log.date__c = Datetime.now();
-                log.message__c = 'Error en Envio de body: ' +data;
-                log.success__c = false;
-                log.type__c = 'Consumo en ws';
-                log.JSON__c = body;
-                if(empresa =='JA'){
-                    log.Empresa__c = 'Colombia';
-                }else if(empresa =='JP'){
-                    log.Empresa__c = 'Panamá';
-                }            
-                insert log;
+                UtilitiesClass.crearLog('Consumo en ws', empresa, 'Consulta_Cita_Entrega', data, body);
                 dataFinalForComponent.add('ERROR EN EL CONSUMO');
                 return dataFinalForComponent;
             }
 
         }catch(Exception e){
             System.debug(e);
-            Log__c log = new Log__c();
-            log.ClassName__c = 'Consulta_Cita_Entrega';
-            log.date__c = Datetime.now();
-            log.message__c = 'Error en Envio de body: ' + e.getMessage() + body;
-            log.success__c = false;
-            log.type__c = 'Consumo en ws';
-            log.JSON__c = body;
-            if(empresa =='JA'){
-                log.Empresa__c = 'Colombia';
-            }else if(empresa =='JP'){
-                log.Empresa__c = 'Panamá';
-            }            
-            insert log; 
+            UtilitiesClass.crearLog('Consumo en ws', empresa, 'Consulta_Cita_Entrega', e.getMessage(), body);
             dataFinalForComponent.add('ERROR EN EL CONSUMO');
             return dataFinalForComponent;
         }
-        return null;
     }
 
     public static void asignacionCitaOp(String idOp, String citaEntrega,String userOperacion){
@@ -150,11 +128,13 @@ public with sharing class CitaOp {
 
     public static String validacionCitaEntrega(String idOp, String citaEntrega, String usuario, Boolean reasignacion){
 
+        String url;
         List<Opportunity> identificacion= [Select Id,Identificaci_n_del_cliente__c from Opportunity where IdOP__c = :idOp];
         String n_ide = identificacion[0].Identificaci_n_del_cliente__c;
         List<TaskResponse> updateTask = new List<TaskResponse>();
         list <String> Answerx = new list<String>();
         List<String> fechaList = new List<String>();
+        MiddlewareActivity datos = new MiddlewareActivity();
 
         for(String st : citaEntrega.split('-')){         
             fechaList.add(st);
@@ -175,46 +155,45 @@ public with sharing class CitaOp {
 
         try{
             String endPoint = Endpoint__mdt.getInstance('ValidacionCitaEntrega').URL__c;
-            String url = endPoint + empresa + '/validacionCitaEntrega?n_ide=' + n_ide + '&rem=' + Op + '&c_agr=' + agencia + '&per=' + periodo;
-            HttpResponse response2 = JamarConsumoHTTP.callServiceExternal(url, null, 'GET',null);
-            Answerx.add(response2.getBody());
+            url = endPoint + empresa + '/validacionCitaEntrega?n_ide=' + n_ide + '&rem=' + Op + '&c_agr=' + agencia + '&per=' + periodo;
+            HttpResponse response = JamarConsumoHTTP.callServiceExternal(url, null, 'GET',null);
+            Integer codigo = response.getStatusCode();
+            Answerx.add(response.getBody());
             String data = Answerx[0];
-            System.debug(data);
             CitaOp jsonParseds = (CitaOp) System.JSON.deserialize(data, CitaOp.class);
-            System.debug(jsonParseds);
-            if(jsonParseds.data[0].CITA_ENTREGA !='' || jsonParseds.data[0].CITA_ENTREGA != null){
-                System.debug('ENTRE');
-                updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario);
-                list<Case> casosAbiertos = [SELECT Id,Status FROM Case WHERE Oportunidad__c =:identificacion[0].Id];
-                System.debug(casosAbiertos);
-                if(!casosAbiertos.isEmpty()){
-                    System.debug(casosAbiertos);
-                    casosAbiertos[0].Status='Cerrado';
-                    update casosAbiertos[0];
+            if(codigo ==200){
+                if(jsonParseds.data[0].CITA_ENTREGA !='' || jsonParseds.data[0].CITA_ENTREGA != null){
+                    String aplicaArmado = lwcCitaOp.aplicaArmado(idOp);
+                    list<Case> casosAbiertos = [SELECT Id,Status FROM Case WHERE Oportunidad__c =:identificacion[0].Id];
+                    if(aplicaArmado == 'NO ARMABLE'){
+                        updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario,'Asignacion de Cita de Entrega y Armado de OP');
+                        if(reasignacion == true){
+                            datos.Actividad.asunto='Reasignacion de Cita de Entrega y Armado de OP';
+                            datos.Actividad.estado='Completed';
+                            datos.Actividad.fechaVencimiento= date.today();
+                            datos.Actividad.numeroOp=Op;
+                            datos.Actividad.identificacion=n_ide;
+                            datos.Actividad.usuario=usuario;
+                            ActivityClass.CrearTarea(datos);
+                        }
+                    }else if(!casosAbiertos.isEmpty()){
+                        System.debug(casosAbiertos);
+                        casosAbiertos[0].Status='Cerrado';
+                        update casosAbiertos[0];
+                    }                               
+                    return 'CITA ASIGNADA EXITOSAMENTE';
+                }else{
+                    UtilitiesClass.crearLog('Consumo en ws', empresa, 'Validacion_Cita_Entrega', data, url); 
+                    return 'CITA NO FUE ASIGNADA';
                 }
-                return 'CITA ASIGNADA EXITOSAMENTE';
             }else{
-                Log__c log = new Log__c();
-                log.ClassName__c = 'Validacion_Cita_Entrega';
-                log.date__c = Datetime.now();
-                log.message__c = 'Error en validacion de entrega: ' + data;
-                log.success__c = false;
-                log.type__c = 'Consumo en ws';
-                log.JSON__c = '';
-                insert log;  
+                UtilitiesClass.crearLog('Consumo en ws', empresa, 'Validacion_Cita_Entrega', data, url);
                 return 'CITA NO FUE ASIGNADA';
             }
 
+
         }catch(Exception e){
-            Log__c log = new Log__c();
-            log.ClassName__c = 'Validacion_Cita_Entrega';
-            log.date__c = Datetime.now();
-            log.message__c = 'Error en validacion de entrega: ' + e.getMessage();
-            log.success__c = false;
-            log.type__c = 'Consumo en ws';
-            log.JSON__c = '';
-            insert log;               
-            System.debug(e.getMessage());
+            UtilitiesClass.crearLog('Consumo en ws', empresa, 'Validacion_Cita_Entrega', e.getMessage(), url);    
             return 'CITA NO FUE ASIGNADA';
         }
     }
@@ -262,52 +241,48 @@ public with sharing class CitaOp {
                         objson.put('service','');
                         objson.put('date', mydate);
             body = String.valueOf(JSON.Serialize(objson));
-            System.debug(body);
-            System.debug(url);
             HttpResponse response =JamarConsumoHTTP.callServiceExternal(url, body, 'POST',null);
             Answerx.add(response.getbody());
+            Integer codigo = response.getStatusCode();
             String data = Answerx[0];
             Map <String, Object> jsonParseds = (Map<String, Object>) JSON.deserializeUntyped(data);
-            String calendario = String.ValueOf(jsonParseds.get('calendar'));
-            String tecnic = String.ValueOf(jsonParseds.get('tecnico'));
-            String recurso = String.ValueOf(jsonParseds.get('recurso'));
-            Set<String> sString = new Set<String>();    
-            System.debug(data);             
-            for(String c : calendario.split(';')){
+            if(codigo == 200){
+                String calendario = String.ValueOf(jsonParseds.get('calendar'));
+                String tecnic = String.ValueOf(jsonParseds.get('tecnico'));
+                String recurso = String.ValueOf(jsonParseds.get('recurso'));
+                Set<String> sString = new Set<String>();    
+                if(calendario != null || calendario != ''){
+                    for(String c : calendario.split(';')){
                         String subfecha = c.substring(0, 10);
                         sString.add(subfecha);
+                    }
+                    List<String> contenedor = new list<String>(sString);
+                    for(Integer i=0;i<contenedor.size();i++){
+                        String valor =  String.valueOf(contenedor[i]);
+                        Date x = Date.valueOf(valor);
+                        String valor2= valor.substringBefore(':');
+                        DateTime dt = DateTime.newInstance(x.year(), x.month(),x.day());
+                        String format = 'YYYY-MM-dd';
+                        String fechas = dt.format(format);
+                        value.add(fechas);
+                                                    
+                    }
+                    armado.fechas=value;
+                    armado.recurso=recurso;
+                    armado.tecnico=tecnic;
+                    armado.mensaje= 'CALENDARIO EXITOSO';
+                }else{
+                    armado.mensaje= 'CALENDARIO NO EXITOSO';
+                }
+                respArmado.add(armado);
+                return respArmado;
+            }else{
+                armado.mensaje=data;
+                respArmado.add(armado);
+                return respArmado;
             }
-            List<String> contenedor = new list<String>(sString);
-            System.debug(contenedor);
-            for(Integer i=0;i<contenedor.size();i++){
-                String valor =  String.valueOf(contenedor[i]);
-                Date x = Date.valueOf(valor);
-                String valor2= valor.substringBefore(':');
-                DateTime dt = DateTime.newInstance(x.year(), x.month(),x.day());
-                String format = 'YYYY-MM-dd';
-                String fechas = dt.format(format);
-                value.add(fechas);
-                                            
-            }
-            System.debug(value);
-            System.debug(jsonParseds);
-            armado.fechas=value;
-            System.debug(armado.fechas);
-            armado.recurso=recurso;
-            armado.tecnico=tecnic;
-            respArmado.add(armado);
-            System.debug(respArmado);
-            return respArmado;
         }catch(Exception e){
-            Log__c log = new Log__c();
-            log.ClassName__c = 'Consulta_Cita_Armado';
-            log.date__c = Datetime.now();
-            log.message__c = 'Error en Envio de body: ' + e.getMessage() + body;
-            log.success__c = false;
-            log.type__c = 'Consumo en ws';
-            log.JSON__c = body;
-            //log.Empresa__c = empresa;
-            insert log;
+            UtilitiesClass.crearLog('Consumo en ws', empresa, 'Consulta_Cita_Armado', e.getMessage(), body);
             armado.mensaje='ERROR DEL CONSUMO';
             respArmado.add(armado);
             return respArmado;
@@ -315,11 +290,14 @@ public with sharing class CitaOp {
     }
 
     public static String asignacionCitaArmado(String idOp, String codigoPais, String citaArmado, String tecnico,
-                                            String codRecurso, Boolean reasignacion){
+                                            String codRecurso, Boolean reasignacion,String usuario){
 
                                             String body;
+                                            MiddlewareActivity datos = new MiddlewareActivity();
                                             List <String> Answerx = new list<String>();
                                             List<String> fechaList = new List<String>();
+                                            List<TaskResponse> updateTask = new List<TaskResponse>();
+                                            List<Opportunity> identificacion= [Select Id,Identificaci_n_del_cliente__c from Opportunity where IdOP__c = :idOp];
                                             for(String st : citaArmado.split('-')){         
                                                 fechaList.add(st);
                                             }
@@ -359,29 +337,24 @@ public with sharing class CitaOp {
                                                 Map <String, Object> jsonParseds = (Map<String, Object>) JSON.deserializeUntyped(data);
                                                 String calendario = String.ValueOf(jsonParseds.get('calendar'));
                                                 if(calendario == 'OK'){
+                                                    updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario,'Asignacion de Cita de Entrega y Armado de OP');
+                                                    if(reasignacion == true){
+                                                        datos.Actividad.asunto='Reasignacion de Cita de Entrega y Armado de OP';
+                                                        datos.Actividad.estado='Completed';
+                                                        datos.Actividad.fechaVencimiento= date.today();
+                                                        datos.Actividad.numeroOp=Op;
+                                                        datos.Actividad.identificacion=identificacion[0].Identificaci_n_del_cliente__c;
+                                                        datos.Actividad.usuario=usuario;
+                                                        ActivityClass.CrearTarea(datos);
+                                                    }
                                                     return 'CITA ASIGNADA EXITOSAMENTE';
                                                 }else{
-                                                    Log__c log = new Log__c();
-                                                    log.ClassName__c = 'Asignar_Cita_Armado';
-                                                    log.date__c = Datetime.now();
-                                                    log.message__c = 'Error en Asignar_Cita_Armado: ' + data;
-                                                    log.success__c = false;
-                                                    log.type__c = 'Consumo en ws';
-                                                    log.JSON__c = '';
-                                                    insert log;  
+                                                    UtilitiesClass.crearLog('Consumo en ws', empresa, 'Asignar_Cita_Armado', data, body);
                                                     return 'CITA NO FUE ASIGNADA';
                                                 }
 
                                             }catch(Exception e){
-                                                Log__c log = new Log__c();
-                                                log.ClassName__c = 'Asignar_Cita_Armado';
-                                                log.date__c = Datetime.now();
-                                                log.message__c = 'Error en Envio de body: ' + e.getMessage() + body;
-                                                log.success__c = false;
-                                                log.type__c = 'Consumo en ws';
-                                                log.JSON__c = body;
-                                                //log.Empresa__c = empresa;
-                                                insert log;
+                                                UtilitiesClass.crearLog('Consumo en ws', empresa, 'Asignar_Cita_Armado',e.getMessage() , body);
                                                 return 'CITA NO FUE ASIGNADA';
 
                                             }

@@ -7,7 +7,7 @@
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 
-                <lightning-card title="Productos de la OP" icon-name="utility:cart" class="lc-listo-facturar-true">
+                <lightning-card title="Productos de la OP" icon-name="utility:cart" class="final-message">
                     <div class="btn-close-modal">
                         <lightning-button label="❌" onclick={closeModal}></lightning-button>
                     </div>
@@ -18,17 +18,17 @@
                                     <tr>
                                         <th>Codigo</th>
                                         <th>Descripcion</th>
-                                        <th>Cantidad</th>
+                                        <th>Cant</th>
                                         <th>Url</th>
                                     </tr>
                                 </thead>
                                 <tbody class="product-dates">
                                     <template for:each={products} for:item="product">
                                         <tr key={product.Id}>
-                                            <td>{product.ProductCode}</td>
+                                            <td class="td-font-samall">{product.ProductCode}</td>
                                             <td class="td-align-left">{product.Product2.Description}</td>
                                             <td>{product.Quantity}</td>
-                                            <td class="td-align-left"><a href={product.Product2.DisplayUrl}
+                                            <td class="td-font-samall"><a href={product.Product2.DisplayUrl}
                                                     target="_blank">Ver</a></td>
                                         </tr>
                                     </template>
@@ -58,7 +58,6 @@
                         <lightning-button label="Cerrar" onclick={closeModal} class="btn-lower"></lightning-button>
                     </div>
                 </lightning-card>
-
 
             </section>
         </section>

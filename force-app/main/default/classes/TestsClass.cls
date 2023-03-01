@@ -1,21 +1,21 @@
 /*************************************************************************
-Nombre de la Clase:     lwcCitaOp
+Nombre de la Clase:     TestsClass
 Versión :               1.0
-Fecha de Creación :     24/10/2023
-Funcionalidad :         Enviar informacion para ser usada en proceso de asignacion de cita.
+Fecha de Creación :     01/03/2023
+Funcionalidad :         Realizar simulacion de consultas a servicios en entorno de pruebas.
 Clase de Prueba:        
 
 Historial de Modificaciones:
 -------------------------------------------------------------------------
-* Desarrollador        - Fecha –        Descripción
+* Desarrollador            - Fecha –        Descripción
 * -----------------------------------------------------------------------
-* Daniela Sanchez         13/02/2023     Versión Original
+* David Escorcia Gómez     01/03/2023     Version para lwc asignacionCitaEntrega
 * 
 
 *************************************************************************/
-public with sharing class lwcCitaOp {
+public with sharing class TestsClass {
     
-    public lwcCitaOp() {}
+    public TestsClass() {}
 
        
     @AuraEnabled
@@ -34,12 +34,10 @@ public with sharing class lwcCitaOp {
     public static String aplicaArmado(String idOp){
 
         try{
-            List<OpportunityLineItem> op= [SELECT id FROM OpportunityLineItem WHERE Product2.Armable__c = true and IdOP__c =: idOp];
-            if(!op.isEmpty()){
-                return 'ARMABLE';
-            }else{
-                return 'NO ARMABLE';
-            }
+            List<Opportunity> op= [SELECT id FROM Opportunity];
+            List<Product2> op2= [select IdProducto__c, ProductCode, CreatedDate from Product2 where IdProducto__c like '%JP%' order by CreatedDate DESC];
+            System.debug('Desde aplicaArmado: ' + op2);
+            return 'NO ARMABLE';
         }catch(Exception e){
             throw new AuraHandledException(e.getMessage());
         }
@@ -48,8 +46,11 @@ public with sharing class lwcCitaOp {
     @AuraEnabled
     public static list<string> calendarioCitasEntrega(String empresa, String idOp){
         try {
+            List<OpportunityLineItem> op= [SELECT id FROM OpportunityLineItem];
             list<string> calendario = new list<String>();
-            calendario = CitaOp.calendarioCitaEntrega(empresa, idOp, 'OP');
+            calendario.add('2023-02-01');
+            calendario.add('2023-03-05');
+            calendario.add('2023-04-07');
             return calendario;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -59,8 +60,9 @@ public with sharing class lwcCitaOp {
     @AuraEnabled
     public static String asignacionCitaEntregaOp(String idOp, String citaEntrega,String userOperacion,Boolean reasignacion){
         try {
-            CitaOp.asignacionCitaOp(idOp, citaEntrega, userOperacion);
-            String citaAsignada = CitaOp.validacionCitaEntrega(idOp, citaEntrega, userOperacion,reasignacion);
+            List<Opportunity> op= [SELECT id FROM Opportunity];
+            System.debug('Desde asignacionCitaEntregaOp: ' + op);
+            String citaAsignada = 'CITA ASIGNADA EXITOSAMENTE';
             return citaAsignada;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -70,10 +72,20 @@ public with sharing class lwcCitaOp {
     @AuraEnabled
     public static List<CitaOp> calendarioArmado(String idOp, String fechaEntrega, String pais){
         try {
-            list<CitaOp> calendario = new list<CitaOp>();
-            calendario = CitaOp.calendarioCitaArmado(idOp, fechaEntrega, pais);
-            System.debug(calendario);
-            return calendario;
+            List<OpportunityLineItem> op= [SELECT id FROM OpportunityLineItem];
+            CitaOp citaOp = new CitaOp();
+            List<CitaOp> lstCitaOp = new List<CitaOp>();
+            list<string> calendario = new list<String>();
+            calendario.add('2023-04-01');
+            calendario.add('2023-04-05');
+            calendario.add('2023-04-07');
+            citaOp.fechas = calendario;
+            citaOp.tecnico = '1033692657';
+            citaOp.mensaje = 'CALENDARIO EXITOS';
+            citaOp.recurso = '03';
+            lstCitaOp.add(citaOp);
+
+            return lstCitaOp;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -84,7 +96,9 @@ public with sharing class lwcCitaOp {
                                             String codRecurso, Boolean reasignacion,String usuario){
 
         try {
-            String citaAsignada = CitaOp.asignacionCitaArmado(idOp, codigoPais, citaArmado, tecnico, codRecurso, reasignacion, usuario);
+            List<Opportunity> op= [SELECT id FROM Opportunity];
+            System.debug('Desde AsignacionArmado: ' + op);
+            String citaAsignada = 'CITA ASIGNADA EXITOSAMENTE';
             return citaAsignada;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
