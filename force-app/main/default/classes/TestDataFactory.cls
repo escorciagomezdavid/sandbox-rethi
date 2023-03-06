@@ -622,7 +622,7 @@ if (listIdRequestCases.size()>0) {insert listIdRequestCases;}
         product.Estado_de_producto__c='INACTIVO';
         product.IdProducto__c = empresa +'_234567';
         if(proceso == 'SinUrl'){
-            product.Armable__c = true;
+            product.Armable__c = false;
             product.Aplica_garantia__c ='SI';
         }else{
             product.Armable__c = true;

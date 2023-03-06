@@ -109,14 +109,14 @@ public class OpportunityClass {
         return opportunities;
     }
     
-    public static List<Opportunity> getOpportunityCotizacion(String  idCotizacion){
+    public static List<Opportunity> getOpportunityCotizacion(QuoteClass Cotizacion){
         List<Opportunity> opportunities = new List<Opportunity>();
         opportunities = [SELECT Id, StageName, VentaTotal__c, Seguro__c, CloseDate, AgenciaPedido__c, Periodo__c, IdOP__c, CodigoVendedor__c, NombreDeVendedor__c, EmisionOrdenPedido__c,
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, PriceBook2Id, Name, Causal_Desiste__c, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
                          Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
-                         FROM Opportunity WHERE Id_Cotizacion__c=: idCotizacion];
+                         FROM Opportunity WHERE Id_Cotizacion__c=: Cotizacion.idCotizacion and CEmpresa__c =: Cotizacion.empresa];
         return opportunities;
     }
     

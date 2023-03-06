@@ -1586,6 +1586,74 @@ public class EntryPoint_test {
 		ResponseClass response = EntryPoint.entryPointAccess();
 		Test.stopTest();
     }
+
+	@isTest
+    public static void opportunityWithIdCotizacion(){
+        TestDataFactory.createAgencia();
+        TestDataFactory.createDepartamento();
+        TestDataFactory.createLeadIdentify('444444444');
+        TestDataFactory.createPricebook();
+		TestDataFactory.crearOportunityAndQuote('JP', 'Contactado');
+		// TestDataFactory.crearOportunityAndQuote('JP', 'Contactado');
+        String JsonMsg = '{' +
+							'"Record" : {' +
+								'"nombre":"Prueba",' +
+								'"segundoNombre":"Prueba",' +
+								'"apellidos":"Prueba Prueba",' +
+								'"origen":"Aplica_Credito",' +
+								'"tipoVenta":"Contado",' +
+								'"cuentaPersona":"Cuenta Persona",' +
+								'"identificacion":"444444444",' +
+								'"correoElectronico":"prueba@prueba.com",' +
+								'"celular":"44444444",' +
+								'"agencia":"JP_001",' +
+								'"pais":"Panama",' +
+								'"empresa":"JP",' +
+								'"tipoIdentificacion":"CEDULA DE CIUDADANIA",' +
+								'"salida":"CONOCIDO",' +
+								'"lectData":"EXD",' +
+								'"descripcion":"Prueba Creacion Prospecto",' +
+								'"idCliente":"JP_444444444",' +
+								'"tipoEnvioDocumentacion":"Fisico",' +
+								'"quieroQueLlamen":"SI"' +
+							'},' +
+							'"Quote" : {' +
+								'"idCotizacion":"JP_001",' +
+								'"empresa":"JP",' +
+            					'"idProspectoInterno":"100",' +
+            					'"fechaVencimiento":"2020-08-15",' +
+            					'"usuarioCreacion":"Brayan",' +
+            					'"usuarioModificacion":"Brayan",' +
+            					'"usuarioAnulacion":"Brayan",' +
+            					'"usuarioCierre":"Brayan",' +
+            					'"codigoAgencia":"JP_001",' +
+            					'"numeroOrdenPedido":999999,' +
+            					'"tipoCotizacion":"Contado",' +
+            					'"tipoCierre":"Ganado",' +
+            					'"vigencia":1,' +
+            					'"facturasUnidas":true,' +
+            					'"fechaCierre":"2020-08-15",' +
+            					'"motivoCierre":"F",' +
+            					'"origenVenta":"Chat de ventas",' +
+            					'"estado":"Inactivo"'+
+
+							'}' +
+						'}';
+        
+        RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/v2/googleBootAPI/';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof(JsonMsg);
+
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		ResponseClass response = EntryPoint.entryPointAccess();
+		Test.stopTest();
+    }
     
    	
     @isTest
@@ -1866,7 +1934,8 @@ public class EntryPoint_test {
     public static void accountSameEmailPhoneAndDiferenteIdentify(){
         TestDataFactory.createAgencia();
         TestDataFactory.createDepartamento();
-        TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera@jamar.com', '3207238250', 'JA');
+        // TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera@jamar.com', '3207238250', 'JA');
+		TestDataFactory.createAccountCustom('444444444', 'JA');
         String JsonMsg = '{' +
 							'"Record" : {' +
 								'"nombre":"Prueba",' +
@@ -1944,7 +2013,8 @@ public class EntryPoint_test {
     public static void accountRecordWithoutIdentifyAndOpportunitty(){
         TestDataFactory.createAgencia();
         TestDataFactory.createDepartamento();
-        TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera3@jamar.com', '32072382503', 'JA');
+        // TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera3@jamar.com', '32072382503', 'JA');
+		TestDataFactory.createAccountCustom('444444444', 'JA');
         list<Account> act = [SELECT ID, FirstName, LastName FROM Account where idCliente__C =: 'JA_444444444'];
         TestDataFactory.crearOportunityContactadoWithIdClient(act[0], 'JA', 'Contactado');
         String JsonMsg = '{' +
@@ -2021,7 +2091,8 @@ public class EntryPoint_test {
     public static void accountRecordWithoutIdentifyAndTwoOpportunitty(){
         TestDataFactory.createAgencia();
         TestDataFactory.createDepartamento();
-        TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera3@jamar.com', '32072382503', 'JA');
+        // TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera3@jamar.com', '32072382503', 'JA');
+		TestDataFactory.createAccountCustom('444444444', 'JA');
         list<Account> act = [SELECT ID, FirstName, LastName FROM Account where idCliente__C =: 'JA_444444444'];
         TestDataFactory.crearOportunityContactadoWithIdClient(act[0], 'JA', 'Contactado');
         TestDataFactory.crearOportunityContactadoWithIdClient(act[0], 'JA', 'Contactado');
@@ -2101,7 +2172,7 @@ public class EntryPoint_test {
     public static void accountRecordWithoutIdentifyAndNoNeOpportunitty(){
         TestDataFactory.createAgencia();
         TestDataFactory.createDepartamento();
-        TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera3@jamar.com', '32072382503', 'JA');
+		TestDataFactory.createAccountCustom('444444444', 'JA');
         String JsonMsg = '{' +
 							'"Record" : {' +
 								'"nombre":"Prueba",' +
@@ -2176,8 +2247,8 @@ public class EntryPoint_test {
     public static void accountMultAndSameEmailAndAccountOneOpportunity(){
         TestDataFactory.createAgencia();
         TestDataFactory.createDepartamento();
-        TestDataFactory.createAccountWithEmailAndPhone('444444444', 'bsilvera3@jamar.com', '32072382503', 'JA');
-        TestDataFactory.createAccountWithEmailAndPhone('555555555', 'bsilvera3@jamar.com', '32072382503', 'JA');
+		TestDataFactory.createAccountCustom('444444444', 'JA');
+		TestDataFactory.createAccountCustom('555555555', 'JA');
         
         String JsonMsg = '{' +
 							'"Record" : {' +
@@ -2254,7 +2325,8 @@ public class EntryPoint_test {
     public static void leadSameEmailPhoneAndDiferenteIdentify(){
         TestDataFactory.createAgencia();
         TestDataFactory.createDepartamento();
-        TestDataFactory.createLeadWithEmailAndPhone('114311111', 'bsilvera2@jamar.com', '32072382502', 'JP');
+        // TestDataFactory.createLeadWithEmailAndPhone('114311111', 'bsilvera2@jamar.com', '32072382502', 'JP');
+		TestDataFactory.createAccountCustom('114311111', 'JP');
         String JsonMsg = '{' +
 							'"Record" : {' +
 								'"nombre":"Prueba",' +
@@ -2372,5 +2444,407 @@ public class EntryPoint_test {
 		ResponseClass response = EntryPoint.entryPointAccess();
 		Test.stopTest();  
     }
+
+	@isTest
+    public static void existeLeadButNoExisteAccount(){
+        TestDataFactory.createAgencia();
+        TestDataFactory.createDepartamento();
+		TestDataFactory.createLeadIdentify('1143154102');
+        String JsonMsg = '{' +
+							'"Record" : {' +
+								'"nombre":"Prueba",' +
+            					'"tienda":"JP_001",' +
+            					'"agencia":"JP_001",' +
+            					'"departamento":"ATL",' +
+								'"segundoNombre":"Prueba",' +
+								'"apellidos":"Prueba Prueba",' +
+								'"origen":"WhatsApp",' +
+            					'"whatsapp":"3207238222",' +
+								'"tipoVenta":"Contado",' +
+								'"cuentaPersona":"Cuenta Persona",' +
+								'"identificacion":"1143154102",' +
+								'"correoElectronico":"jamartest@jamar.com",' +
+								'"celular":"44444444",' +
+								'"empresa":"JP",' +
+								'"tipoIdentificacion":"CEDULA DE CIUDADANIA",' +
+								'"salida":"CONOCIDO",' +
+								'"lectData":"EXD",' +
+								'"descripcion":"Prueba Creacion Prospecto",' +
+								'"idCliente":"JP_1143154102",' +
+            					'"pais":"Panama",' +
+            					'"nombreVendedor":"Brayan",' +
+            					'"cupoDisponible":10,' +
+            					'"productoInteres":"cama",' +
+            					'"cuantosContactosTenido":10,' +
+                                '"lineaLlamada":"Whatsapp",' +
+            					'"cuotaDisponible":10,' +
+                                '"viabilidad":"ROJO",' +
+                                '"estrategia":"NARANJA",' +
+            					'"segmento":"ORO",' +
+            					'"ingresos":10,' +
+                                '"ciudadResidencia":"C8SSSS",' +
+                                '"paisResidencia":"Panama",' +
+                                '"latitudResidencia":"10",' +
+                                '"longitudResidencia":"10",' +
+            					'"calleResidencia":"10",' +
+            					'"telefonoFijo":"102828282",' +
+            					'"telefonoTrabajo":"102828282",' +
+                                '"ciudadTrabajo":"PAN",' +
+            					'"longitudTrabajo":"10",' +
+                                '"latitudTrabajo":"10",' +
+            					'"calleTrabajo":"10",' +
+            					'"anioInicio":"10",' +
+            					'"fechaNacimiento":"2020-08-15",' +
+            					'"tipoEnvioDocumentacion":"FISICO",' +
+            					'"sexo":"FEMENINO",' +
+            					'"estadoCivil":"SOLTERO",' +
+                               	'"ocupacion":"COMERCIANTE FORMAL",' +
+                                '"quieroQueLlamen":"SI",' +
+                                '"tieneCuentaActiva":"SI",' +
+            					'"tipoPagoUltimaCompraContado":"consignación bancaria",' +
+            					'"gclid":"cooosoaiii2",' +
+								'"ofertaEspecial":' + true +
+							'}' +
+						'}';
+    
+    	RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/v2/googleBootAPI/';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof(JsonMsg);
+
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		ResponseClass response = EntryPoint.entryPointAccess();
+		Test.stopTest();
+
+    }
+
+	@isTest
+    public static void entraLeadYExisteAccountParecidaPeroConIdentificacionDiferente(){
+        TestDataFactoryDos.createAgencia();
+        TestDataFactoryDos.createDepartamento();
+		TestDataFactoryDos.createAccountWithIdentification('1111111111');
+        String JsonMsg = '{' +
+							'"Record" : {' +
+								'"nombre":"Prueba",' +
+            					'"tienda":"JP_001",' +
+            					'"agencia":"JP_001",' +
+            					'"departamento":"ATL",' +
+								'"segundoNombre":"Prueba",' +
+								'"apellidos":"Prueba Prueba",' +
+								'"origen":"WhatsApp",' +
+								'"tipoVenta":"Contado",' +
+								'"cuentaPersona":"Cuenta Persona",' +
+								'"identificacion":"1143154102",' +
+								'"correoElectronico":"jamartest@jamar.com",' +
+								'"celular":"50744444444",' +
+								'"empresa":"JP",' +
+								'"tipoIdentificacion":"CEDULA DE CIUDADANIA",' +
+								'"salida":"CONOCIDO",' +
+								'"lectData":"EXD",' +
+								'"descripcion":"Prueba Creacion Prospecto",' +
+								'"idCliente":"JP_1143154102",' +
+            					'"pais":"Panama",' +
+            					'"nombreVendedor":"Brayan",' +
+            					'"cupoDisponible":10,' +
+            					'"productoInteres":"cama",' +
+            					'"cuantosContactosTenido":10,' +
+                                '"lineaLlamada":"Whatsapp",' +
+            					'"cuotaDisponible":10,' +
+                                '"viabilidad":"ROJO",' +
+                                '"estrategia":"NARANJA",' +
+            					'"segmento":"ORO",' +
+            					'"ingresos":10,' +
+                                '"ciudadResidencia":"C8SSSS",' +
+                                '"paisResidencia":"Panama",' +
+                                '"latitudResidencia":"10",' +
+                                '"longitudResidencia":"10",' +
+            					'"calleResidencia":"10",' +
+            					'"telefonoFijo":"102828282",' +
+            					'"telefonoTrabajo":"102828282",' +
+                                '"ciudadTrabajo":"PAN",' +
+            					'"longitudTrabajo":"10",' +
+                                '"latitudTrabajo":"10",' +
+            					'"calleTrabajo":"10",' +
+            					'"anioInicio":"10",' +
+            					'"fechaNacimiento":"2020-08-15",' +
+            					'"tipoEnvioDocumentacion":"FISICO",' +
+            					'"sexo":"FEMENINO",' +
+            					'"estadoCivil":"SOLTERO",' +
+                               	'"ocupacion":"COMERCIANTE FORMAL",' +
+                                '"quieroQueLlamen":"SI",' +
+                                '"tieneCuentaActiva":"SI",' +
+            					'"tipoPagoUltimaCompraContado":"consignación bancaria",' +
+            					'"gclid":"cooosoaiii2",' +
+								'"ofertaEspecial":' + true +
+							'}' +
+						'}';
+    
+    	RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/v2/googleBootAPI/';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof(JsonMsg);
+
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		ResponseClass response = EntryPoint.entryPointAccess();
+		Test.stopTest();
+
+    }
+
+	@isTest
+    public static void requestBodyNull(){
+    
+    	RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		RestContext.request = null;
+		RestContext.response = res;
+
+		Test.startTest();
+		ResponseClass response = EntryPoint.entryPointAccess();
+		Test.stopTest();
+
+    }
     	
+	@isTest
+    public static void entraLeadYExisteLeadParecidoPeroConIdentificacionDiferente(){
+        TestDataFactoryDos.createAgencia();
+        TestDataFactoryDos.createDepartamento();
+		TestDataFactoryDos.createLeadWithIdentification('1111111111');
+        String JsonMsg = '{' +
+							'"Record" : {' +
+								'"nombre":"Prueba",' +
+            					'"tienda":"JP_001",' +
+            					'"agencia":"JP_001",' +
+            					'"departamento":"ATL",' +
+								'"segundoNombre":"Prueba",' +
+								'"apellidos":"Prueba Prueba",' +
+								'"origen":"WhatsApp",' +
+            					'"whatsapp":"+5073207238222",' +
+								'"tipoVenta":"Contado",' +
+								'"cuentaPersona":"Cuenta Persona",' +
+								'"identificacion":"1143154102",' +
+								'"correoElectronico":"jamartest@jamar.com",' +
+								'"celular":"50744444444",' +
+								'"empresa":"JP",' +
+								'"tipoIdentificacion":"CEDULA DE CIUDADANIA",' +
+								'"salida":"CONOCIDO",' +
+								'"lectData":"EXD",' +
+								'"descripcion":"Prueba Creacion Prospecto",' +
+								'"idCliente":"JP_1143154102",' +
+            					'"pais":"Panama",' +
+            					'"nombreVendedor":"Brayan",' +
+            					'"cupoDisponible":10,' +
+            					'"productoInteres":"cama",' +
+            					'"cuantosContactosTenido":10,' +
+                                '"lineaLlamada":"Whatsapp",' +
+            					'"cuotaDisponible":10,' +
+                                '"viabilidad":"ROJO",' +
+                                '"estrategia":"NARANJA",' +
+            					'"segmento":"ORO",' +
+            					'"ingresos":10,' +
+                                '"ciudadResidencia":"C8SSSS",' +
+                                '"paisResidencia":"Panama",' +
+                                '"latitudResidencia":"10",' +
+                                '"longitudResidencia":"10",' +
+            					'"calleResidencia":"10",' +
+            					'"telefonoFijo":"102828282",' +
+            					'"telefonoTrabajo":"102828282",' +
+                                '"ciudadTrabajo":"PAN",' +
+            					'"longitudTrabajo":"10",' +
+                                '"latitudTrabajo":"10",' +
+            					'"calleTrabajo":"10",' +
+            					'"anioInicio":"10",' +
+            					'"fechaNacimiento":"2020-08-15",' +
+            					'"tipoEnvioDocumentacion":"FISICO",' +
+            					'"sexo":"FEMENINO",' +
+            					'"estadoCivil":"SOLTERO",' +
+                               	'"ocupacion":"COMERCIANTE FORMAL",' +
+                                '"quieroQueLlamen":"SI",' +
+                                '"tieneCuentaActiva":"SI",' +
+            					'"tipoPagoUltimaCompraContado":"consignación bancaria",' +
+            					'"gclid":"cooosoaiii2",' +
+								'"ofertaEspecial":' + true +
+							'}' +
+						'}';
+    
+    	RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/v2/googleBootAPI/';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof(JsonMsg);
+
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		ResponseClass response = EntryPoint.entryPointAccess();
+		Test.stopTest();
+
+    }
+
+	@isTest
+    public static void entraLeadYExisteLeadParecidoConIdentificacionIgual(){
+        TestDataFactoryDos.createAgencia();
+        TestDataFactoryDos.createDepartamento();
+		TestDataFactoryDos.createLeadWithIdentification('1143154102');
+        String JsonMsg = '{' +
+							'"Record" : {' +
+								'"nombre":"Prueba",' +
+            					'"tienda":"JP_001",' +
+            					'"agencia":"JP_001",' +
+            					'"departamento":"ATL",' +
+								'"segundoNombre":"Prueba",' +
+								'"apellidos":"Prueba Prueba",' +
+								'"origen":"WhatsApp",' +
+            					'"whatsapp":"+5073207238222",' +
+								'"tipoVenta":"Contado",' +
+								'"cuentaPersona":"Cuenta Persona",' +
+								'"identificacion":"1143154102",' +
+								'"correoElectronico":"jamartest@jamar.com",' +
+								'"celular":"50744444444",' +
+								'"empresa":"JP",' +
+								'"tipoIdentificacion":"CEDULA DE CIUDADANIA",' +
+								'"salida":"CONOCIDO",' +
+								'"lectData":"EXD",' +
+								'"descripcion":"Prueba Creacion Prospecto",' +
+            					'"pais":"Panama",' +
+            					'"nombreVendedor":"Brayan",' +
+            					'"cupoDisponible":10,' +
+            					'"productoInteres":"cama",' +
+            					'"cuantosContactosTenido":10,' +
+                                '"lineaLlamada":"Whatsapp",' +
+            					'"cuotaDisponible":10,' +
+                                '"viabilidad":"ROJO",' +
+                                '"estrategia":"NARANJA",' +
+            					'"segmento":"ORO",' +
+            					'"ingresos":10,' +
+                                '"ciudadResidencia":"C8SSSS",' +
+                                '"paisResidencia":"Panama",' +
+                                '"latitudResidencia":"10",' +
+                                '"longitudResidencia":"10",' +
+            					'"calleResidencia":"10",' +
+            					'"telefonoFijo":"102828282",' +
+            					'"telefonoTrabajo":"102828282",' +
+                                '"ciudadTrabajo":"PAN",' +
+            					'"longitudTrabajo":"10",' +
+                                '"latitudTrabajo":"10",' +
+            					'"calleTrabajo":"10",' +
+            					'"anioInicio":"10",' +
+            					'"fechaNacimiento":"2020-08-15",' +
+            					'"tipoEnvioDocumentacion":"FISICO",' +
+            					'"sexo":"FEMENINO",' +
+            					'"estadoCivil":"SOLTERO",' +
+                               	'"ocupacion":"COMERCIANTE FORMAL",' +
+                                '"quieroQueLlamen":"SI",' +
+                                '"tieneCuentaActiva":"SI",' +
+            					'"tipoPagoUltimaCompraContado":"consignación bancaria",' +
+            					'"gclid":"cooosoaiii2",' +
+								'"ofertaEspecial":' + true +
+							'}' +
+						'}';
+    
+    	RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/v2/googleBootAPI/';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof(JsonMsg);
+
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		ResponseClass response = EntryPoint.entryPointAccess();
+		Test.stopTest();
+
+    }
+
+	@isTest
+    public static void entraLeadYExisteLeadParecidoSinIdentificacion(){
+        TestDataFactoryDos.createAgencia();
+        TestDataFactoryDos.createDepartamento();
+		TestDataFactoryDos.createLeadWithOutIdentification();
+        String JsonMsg = '{' +
+							'"Record" : {' +
+								'"nombre":"Prueba",' +
+            					'"tienda":"JP_001",' +
+            					'"agencia":"JP_001",' +
+            					'"departamento":"ATL",' +
+								'"segundoNombre":"Prueba",' +
+								'"apellidos":"Prueba Prueba",' +
+								'"origen":"WhatsApp",' +
+            					'"whatsapp":"+5073207238222",' +
+								'"tipoVenta":"Contado",' +
+								'"cuentaPersona":"Cuenta Persona",' +
+								'"identificacion":"1143154102",' +
+								'"correoElectronico":"jamartest@jamar.com",' +
+								'"celular":"50744444444",' +
+								'"empresa":"JP",' +
+								'"tipoIdentificacion":"CEDULA DE CIUDADANIA",' +
+								'"salida":"CONOCIDO",' +
+								'"lectData":"EXD",' +
+								'"descripcion":"Prueba Creacion Prospecto",' +
+								'"idCliente":"JP_1143154102",' +
+            					'"pais":"Panama",' +
+            					'"nombreVendedor":"Brayan",' +
+            					'"cupoDisponible":10,' +
+            					'"productoInteres":"cama",' +
+            					'"cuantosContactosTenido":10,' +
+                                '"lineaLlamada":"Whatsapp",' +
+            					'"cuotaDisponible":10,' +
+                                '"viabilidad":"ROJO",' +
+                                '"estrategia":"NARANJA",' +
+            					'"segmento":"ORO",' +
+            					'"ingresos":10,' +
+                                '"ciudadResidencia":"C8SSSS",' +
+                                '"paisResidencia":"Panama",' +
+                                '"latitudResidencia":"10",' +
+                                '"longitudResidencia":"10",' +
+            					'"calleResidencia":"10",' +
+            					'"telefonoFijo":"102828282",' +
+            					'"telefonoTrabajo":"102828282",' +
+                                '"ciudadTrabajo":"PAN",' +
+            					'"longitudTrabajo":"10",' +
+                                '"latitudTrabajo":"10",' +
+            					'"calleTrabajo":"10",' +
+            					'"anioInicio":"10",' +
+            					'"fechaNacimiento":"2020-08-15",' +
+            					'"tipoEnvioDocumentacion":"FISICO",' +
+            					'"sexo":"FEMENINO",' +
+            					'"estadoCivil":"SOLTERO",' +
+                               	'"ocupacion":"COMERCIANTE FORMAL",' +
+                                '"quieroQueLlamen":"SI",' +
+                                '"tieneCuentaActiva":"SI",' +
+            					'"tipoPagoUltimaCompraContado":"consignación bancaria",' +
+            					'"gclid":"cooosoaiii2",' +
+								'"ofertaEspecial":' + true +
+							'}' +
+						'}';
+    
+    	RestRequest req = new RestRequest();
+		RestResponse res = new RestResponse();
+
+		req.requestURI = '/services/apexrest/v2/googleBootAPI/';
+		req.httpMethod = 'POST';
+		req.requestBody = Blob.valueof(JsonMsg);
+
+		RestContext.request = req;
+		RestContext.response = res;
+
+		Test.startTest();
+		ResponseClass response = EntryPoint.entryPointAccess();
+		Test.stopTest();
+
+    }
 }

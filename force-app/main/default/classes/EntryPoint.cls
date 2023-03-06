@@ -135,51 +135,8 @@ global class EntryPoint {
                                     if(accountWithEmailAndPhone[0].Identificacion__c != middleware.Record.identificacion){
                                         	RecordClass.createdNewLead(middleware);
                                     } 
-                                    /** Validar Con Jose todos los casos de uso
-                                    else{
-                                        
-                                        List<Opportunity> opportinityOpen = OpportunityClass.getOpportunityOtherStage(accountWithEmailAndPhone[0]);
-                                        System.debug('opportinityOpen ----------------------');
-                                        System.debug(opportinityOpen.size());
-                                        
-                                        if(opportinityOpen.size() == 1){
-                                                OpportunityClass.updateOpportunityWithId(opportinityOpen[0].id, middleware);
-                                            	RecordClass.updateAccount(middleware);
-                                        }else if (opportinityOpen.size() >= 2){
-                                            List<Opportunity> opportinityOpenMore = OpportunityClass.getOpportunityLastDate(accountWithEmailAndPhone[0]);
-                                            OpportunityClass.updateOpportunityWithId(opportinityOpenMore[0].id, middleware);
-                                            RecordClass.updateAccount(middleware);
-                                        }
-                                        else{
-                                              OpportunityClass.createdOpportunityOtherStage(accountWithEmailAndPhone[0], middleware, leadConvertido, 'Contactado');
-                                              RecordClass.updateAccount(middleware);
-                                        }
-                                        //RecordClass.updateAccount(middleware);
-                                    }
-									**/
+                                    
                                 }
-                                /** Validar Con Jose todos los casos de uso
-                                else{
-                                    	List<Opportunity> opportinityOpen = OpportunityClass.getOpportunityOtherStage(accountWithEmailAndPhone[0]);
-                                        System.debug('opportinityOpen ----------------------');
-                                        System.debug(opportinityOpen.size());
-                                        
-                                        if(opportinityOpen.size() == 1){
-                                                OpportunityClass.updateOpportunityWithId(opportinityOpen[0].id, middleware);
-                                            	RecordClass.updateAccount(middleware);
-                                        }else if (opportinityOpen.size() >= 2){
-                                            List<Opportunity> opportinityOpenMore = OpportunityClass.getOpportunityLastDate(accountWithEmailAndPhone[0]);
-                                            OpportunityClass.updateOpportunityWithId(opportinityOpenMore[0].id, middleware);
-                                            RecordClass.updateAccount(middleware);
-                                        }
-                                        else{
-                                              OpportunityClass.createdOpportunityOtherStage(accountWithEmailAndPhone[0], middleware, leadConvertido, 'Contactado');
-                                              RecordClass.updateAccount(middleware);
-                                        }
-                                    //RecordClass.updateAccount(middleware);
-                                }
-								**/
-        
                             }
                         	else if(leadWithEmailAndPhone.size() >= 1  && jsonConQuote == false && jsonConOp == false){                                
                                 if(leadWithEmailAndPhone.size() >= 1)
@@ -435,7 +392,7 @@ global class EntryPoint {
                          * **/
                        	account = RecordClass.getAccountIdCliente(middleware.Record.idCliente);
                         List<Opportunity> opportunitySinIdIOpExistente = OpportunityClass.getOpportunityContactado(account[0]);
-                        List<Opportunity> opportunityWithIdCotizacion  = OpportunityClass.getOpportunityCotizacion(middleware.Quote.idCotizacion);
+                        List<Opportunity> opportunityWithIdCotizacion  = OpportunityClass.getOpportunityCotizacion(middleware.Quote);
                         Quote quote  = new Quote();
                         if(opportunityWithIdCotizacion.size() >= 1){
                             quote = QuoteClass.createdQuote(middleware, opportunityWithIdCotizacion[0]);
