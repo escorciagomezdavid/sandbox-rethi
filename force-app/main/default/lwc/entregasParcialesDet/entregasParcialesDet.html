@@ -1,0 +1,54 @@
+<template>
+    <template if:true={showScreen1}>
+        <lightning-card title="Opciones de Entrega" icon-name="utility:cart" class="final-message">
+            <div class="calendar-table">
+                <template if:true={firstDelivery}>
+                    <table>
+                        <thead id="first-delivery">
+                            <tr>
+                                <th class="td-font-samall">Codigo</th>
+                                <th class="td-font-samall">Descripcion</th>
+                                <th class="td-font-samall">Cant</th>
+                            </tr>
+                        </thead>
+                        <tbody class="product-dates">
+                            <template for:each={firstDelivery} for:item="product">
+                                <tr key={product.sku}>
+                                    <td class="td-font-samall">{product.sku}</td>
+                                    <td class="td-align-left">Name Product</td>
+                                    <td>{product.cantidad}</td>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+                <template if:true={secondDelivery}>
+                    <table>
+                        <thead id="second-delivery">
+                            <tr>
+                                <th class="td-font-samall">Codigo</th>
+                                <th class="td-font-samall">Descripcion</th>
+                                <th class="td-font-samall">Cant</th>
+                            </tr>
+                        </thead>
+                        <tbody class="product-dates">
+                            <template for:each={secondDelivery} for:item="product">
+                                <tr key={product.sku}>
+                                    <td class="td-font-samall">{product.sku}</td>
+                                    <td class="td-align-left">Name Product</td>
+                                    <td>{product.cantidad}</td>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+            </div>
+            <div class="content-btn-lower">
+                <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
+                    class="btn-lower"></lightning-button>
+            </div>
+        </lightning-card>
+    </template>
+</template>

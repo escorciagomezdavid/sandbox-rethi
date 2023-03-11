@@ -34,22 +34,18 @@ public with sharing class lwcCitaOp {
     public static String aplicaArmado(String idOp){
 
         try{
-            List<OpportunityLineItem> op= [SELECT id FROM OpportunityLineItem WHERE Product2.Armable__c = true and IdOP__c =: idOp];
-            if(!op.isEmpty()){
-                return 'ARMABLE';
-            }else{
-                return 'NO ARMABLE';
-            }
+            string armado = CitaOp.aplicaArmadoOp(idOp);
+            return armado;
         }catch(Exception e){
             throw new AuraHandledException(e.getMessage());
         }
     }
 
     @AuraEnabled
-    public static list<string> calendarioCitasEntrega(String empresa, String idOp){
+    public static CitaOp calendarioCitasEntrega(String idOp){
         try {
-            list<string> calendario = new list<String>();
-            calendario = CitaOp.calendarioCitaEntrega(empresa, idOp, 'OP');
+            CitaOp calendario = new CitaOp();
+            calendario = CitaOp.calendarioEntregasParciales(idOp);
             return calendario;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());

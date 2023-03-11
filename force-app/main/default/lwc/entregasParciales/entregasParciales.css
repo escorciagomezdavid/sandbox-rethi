@@ -1,0 +1,111 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: gray;
+    color: white;
+    border: 0;
+}
+
+.prev-month {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.next-month {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.month-year {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    width: 50%;
+    margin: auto;
+}
+
+.month-year-armado {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    width: 50%;
+    margin: auto;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    padding: 10px;
+}
+
+.calendar-armado-header {
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    padding: 10px;
+}
+
+.calendar-dates {
+    width: 100%;
+}
+
+.product-dates{
+    width: 100%;
+}
+
+.calendar-dates-armado {
+    width: 100%;
+}
+
+.msg-screen2 {
+    display: none;
+}
+
+.calendar-table {
+    padding: 10px;
+}
+
+lightning-card {
+    display: contents;
+}
+
+.content-btn-lower {
+    justify-content: center;
+    display: flex;
+}
+
+.btn-lower {
+    font-weight: bold;
+    text-align: center;
+    margin: 10px;
+}
+
+.td-align-left {
+    text-align: left;
+    font-size: small;
+}
+
+.td-font-samall{
+    font-size: small;
+}
+
+.btn-close-modal {
+    text-align: right;
+    padding: 10px;
+}
+
+.final-message {
+    padding: 10px;
+    text-align: center;
+}

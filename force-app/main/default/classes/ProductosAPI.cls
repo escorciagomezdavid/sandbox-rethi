@@ -2,6 +2,10 @@
     Creacion y actualizacion de Registros de productos
     Autor: Luis Espinoza
     07/oct/2019
+	
+	(1) Campos de lineas y sublineas del productos agregados
+	Autor: Andrés Tarra
+	16/ene/2023
 */
 @RestResource(urlMapping='/productosapi/*')
 global with sharing class ProductosAPI {
@@ -58,6 +62,8 @@ global with sharing class ProductosAPI {
 						p.Aplica_garantia__c    =   r.AplicaGarantia;
 						p.Description			= 	r.Descripcion;
 						p.Family				= 	r.Categoria;
+                        p.Linea__c				=	r.Linea; //Linea modificacion (1)ATARRA
+                        p.Sublinea__c			=	r.Sublinea; //Linea modificacion (1)ATARRA
 						p.IsActive				=	r.Active;
                         p.Armable__c			=	r.Armable;
 						p.QuantityUnitOfMeasure	=	r.UnidadMedida;
@@ -168,6 +174,8 @@ global with sharing class ProductosAPI {
 		global Boolean Active {get;set;}
         global Boolean Armable {get;set;}
 		global string Categoria{get;set;}
+        global string Linea {get;set;} //Linea modificacion (1)ATARRA
+        global string Sublinea {get;set;} //Linea modificacion (1)ATARRA
 		global string UnidadMedida{get;set;}
 		global string UrlImagen{get;set;}
         global string IdProducto{get;set;}        
@@ -187,6 +195,8 @@ global with sharing class ProductosAPI {
                 "Descripcion":"Comedor tipo base cubierta de madera, estructura elaborada 100% en madera de roble con acabado semimate color Natural-Blanco, tapizado en tela tipo Lino de alta durabilidad y suave al tacto color Azul. Incluye 4 sillas. *Requiere servicio de armado.",
                 "Active": true,
 				"Categoria": "Comedores",
+				"Linea": "Comedores",
+				"Sublinea": "Bife",
 				"UnidadMedida": "Unidad",
 				"UrlImagen": "https://cdn.shopify.com/s/files/1/0014/7531/3727/products/file_72aa5724-121d-4281-9fbd-0329e5df4ff2.progressive.jpg?v=1565934617",
 				"IdProducto": "JAP002",
@@ -200,6 +210,8 @@ global with sharing class ProductosAPI {
                 "Descripcion":"Mecedora elaborada en maderade roble y espuma certificada, tapizado en tela tipo Lino de alta durabilidad y suave al tacto, color Mostaza. Medidas: 70x95 cm",
                 "Active": true,
 				"Categoria": "Mecedoras",
+				"Linea": "Comedores",
+				"Sublinea": "Bife",
 				"UnidadMedida": "Unidad",
 				"UrlImagen": "https://cdn.shopify.com/s/files/1/0014/7531/3727/products/file_df1ffaf4-0b1d-46b3-922a-a4da91eaf83f.progressive.jpg?v=1565288040",
 				"IdProducto": "JAP003",
@@ -213,6 +225,8 @@ global with sharing class ProductosAPI {
                 "Descripcion":"Juego de Sala elaborado en madera y espumas certificadas, tela tipo Eurolino antipeladuras y antiliquidos de facil limpieza color Gris plomo, patas 100% madera de roble color Natural . Incluye: sofa, butaco y puff.",
                 "Active": true,
 				"Categoria": "Juegos de salas",
+				"Linea": "Comedores",
+				"Sublinea": "Bife",
 				"UnidadMedida": "Juego",
 				"UrlImagen": "https://cdn.shopify.com/s/files/1/0014/7531/3727/products/file_adcee8cc-5e3f-41d2-b535-9656b2e83c01.progressive.jpg?v=1565288335",
 				"IdProducto": "JAP004",

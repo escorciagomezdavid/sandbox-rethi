@@ -1,181 +1,137 @@
 <template>
-    <template if:true={showScreen1}>
-        <lightning-button label="Asignar Cita" onclick={nextScreen}></lightning-button>
+    <template if:true={spinnerInit}>
+        <div class="lightning-spinner">
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
     </template>
 
-    <template if:true={showScreen2}>
-        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
-            <section class="slds-modal__container">
-
-                <lightning-card title="Productos de la OP" icon-name="utility:cart" class="final-message">
-                    <div class="btn-close-modal">
-                        <lightning-button label="❌" onclick={closeModal}></lightning-button>
-                    </div>
-                    <div class="calendar-table">
-                        <template if:true={products}>
-                            <table>
-                                <thead id="product-body">
-                                    <tr>
-                                        <th class="td-font-samall">Codigo</th>
-                                        <th class="td-font-samall">Descripcion</th>
-                                        <th class="td-font-samall">Cant</th>
-                                        <th class="td-font-samall">Url</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="product-dates">
-                                    <template for:each={products} for:item="product">
-                                        <tr key={product.Id}>
-                                            <td class="td-font-samall">{product.ProductCode}</td>
-                                            <td class="td-align-left">{product.Product2.Description}</td>
-                                            <td>{product.Quantity}</td>
-                                            <td class="td-font-samall"><a href={product.Product2.DisplayUrl}
-                                                    target="_blank">Ver</a></td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </table>
-                        </template>
-                    </div>
-                    <div class="content-btn-lower">
-                        <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
-                            class="btn-lower"></lightning-button>
-                    </div>
-                </lightning-card>
-
-            </section>
-        </section>
-        <section class="slds-backdrop slds-backdrop_open" onclick={closeModal}></section>
-        <div></div>
-    </template>
-
-    <template if:true={showScreenError}>
-        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
-            <section class="slds-modal__container">
-
-                <lightning-card title="NO Lista Facturar" class="lc-listo-facturar-false">
-                    <h2 class="final-message">La Oportunidad No se encuentra Lista a Facturar</h2>
-                    <div class="content-btn-lower">
-                        <lightning-button label="Cerrar" onclick={closeModal} class="btn-lower"></lightning-button>
-                    </div>
-                </lightning-card>
-
-            </section>
-        </section>
-        <section class="slds-backdrop slds-backdrop_open" onclick={closeModal}></section>
-        <div></div>
-    </template>
-
-
-    <template if:true={showScreen3}>
-        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
-            <section class="slds-modal__container">
-
-                <lightning-card class="c-lightning-card" title="Entregas Disponibles" icon-name="utility:event">
-                    <div class="btn-close-modal">
-                        <lightning-button label="❌" onclick={closeModal}></lightning-button>
-                    </div>
-                    <div id="calendar" class="calendar-table">
-                        <div>
-                            <h2 class="month-year" lwc:dom="manual"></h2>
-                        </div>
-
-                        <table>
-                            <thead id="calendar-body">
-                                <tr>
-                                    <th>Dom</th>
-                                    <th>Lun</th>
-                                    <th>Mar</th>
-                                    <th>Mie</th>
-                                    <th>Jue</th>
-                                    <th>Vie</th>
-                                    <th>Sab</th>
+    <template if:true={productsOp}>
+        <lightning-card title="Productos de la OP" icon-name="utility:cart" class="final-message">
+            <div class="calendar-table">
+                <template if:true={products}>
+                    <table>
+                        <thead id="product-body">
+                            <tr>
+                                <th class="td-font-samall">Codigo</th>
+                                <th class="td-font-samall">Descripcion</th>
+                                <th class="td-font-samall">Cant</th>
+                                <th class="td-font-samall">Url</th>
+                            </tr>
+                        </thead>
+                        <tbody class="product-dates">
+                            <template for:each={products} for:item="product">
+                                <tr key={product.Id}>
+                                    <td class="td-font-samall">{product.ProductCode}</td>
+                                    <td class="td-align-left">{product.Product2.Description}</td>
+                                    <td>{product.Quantity}</td>
+                                    <td class="td-font-samall"><a href={product.Product2.DisplayUrl}
+                                            target="_blank">Ver</a></td>
                                 </tr>
-                            </thead>
-                            <tbody class="calendar-dates" lwc:dom="manual"></tbody>
-                        </table>
-                        <div id="calendar-header" class="calendar-header">
-                            <lightning-button class="prev-month" label="<" onclick={prevMonth}></lightning-button>
-                            <lightning-button class="next-month" label=">" onclick={nextMonth}></lightning-button>
-                        </div>
-                    </div>
-                    <template if:true={datesEntrega}></template>
-                    <div class="content-btn-lower">
-                        <lightning-button class="btn-lower" label="Asignar Fecha Entrega"
-                            onclick={assignFechaEntrega}></lightning-button>
-                    </div>
-                </lightning-card>
-
-            </section>
-        </section>
-        <section class="slds-backdrop slds-backdrop_open"></section>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+            </div>
+            <div class="content-btn-lower">
+                <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
+                    class="btn-lower"></lightning-button>
+            </div>
+        </lightning-card>
     </template>
 
-    <template if:true={showScreenReasignar}>
-        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
-            <section class="slds-modal__container">
-
-                <lightning-card title="OP Tiene Cita Asignada" class="lc-listo-facturar-false">
-                    <h2 class="final-message">Su Orden de Pedido ya tiene Cita Asignada ¿Desea Reasignarla?</h2>
-                    <div class="content-btn-lower">
-                        <div>
-                            <lightning-button label="Si" onclick={reasignacion} class="btn-lower"></lightning-button>
-                            <lightning-button label="No" onclick={closeModal} class="btn-lower"></lightning-button>
-                        </div>
-
-                    </div>
-                </lightning-card>
-
-
-            </section>
-        </section>
-        <section class="slds-backdrop slds-backdrop_open" onclick={closeModal}></section>
-        <div></div>
+    <template if:true={errorNoListaFactu}>
+        <lightning-card title="NO Lista Facturar" class="lc-listo-facturar-false">
+            <h2 class="final-message">La Oportunidad No se encuentra Lista a Facturar</h2>
+            <div class="content-btn-lower">
+                <lightning-button label="Cerrar" onclick={closeModal} class="btn-lower"></lightning-button>
+            </div>
+        </lightning-card>
     </template>
 
-    <template if:true={showScreen4}>
-        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
-            <section class="slds-modal__container">
+    <template if:true={calendarEntrega}>
+        <lightning-card class="c-lightning-card" title="Entregas Disponibles" icon-name="utility:event">
+            <div id="calendar" class="calendar-table">
+                <div>
+                    <h2 class="month-year" lwc:dom="manual"></h2>
+                </div>
 
-                <lightning-card class="c-lightning-card" title="Armados Disponibles" icon-name="utility:event">
-                    <div class="btn-close-modal">
-                        <lightning-button label="❌" onclick={closeModal}></lightning-button>
-                    </div>
-                    <div id="calendar-armado" class="calendar-table">
-                        <div>
-                            <h2 class="month-year-armado" lwc:dom="manual"></h2>
-                        </div>
-                        <table>
-                            <thead id="calendar-armado-body">
-                                <tr>
-                                    <th>Dom</th>
-                                    <th>Lun</th>
-                                    <th>Mar</th>
-                                    <th>Mie</th>
-                                    <th>Jue</th>
-                                    <th>Vie</th>
-                                    <th>Sab</th>
-                                </tr>
-                            </thead>
-                            <tbody class="calendar-dates-armado" lwc:dom="manual"></tbody>
-                        </table>
-                        <div id="calendar-armado-header" class="calendar-armado-header">
-                            <lightning-button class="prev-month" label="<" onclick={prevMonthArmado}></lightning-button>
-                            <lightning-button class="next-month" label=">" onclick={nextMonthArmado}></lightning-button>
-                        </div>
-                    </div>
-                    <template if:true={datesArmado}></template>
-                    <div class="content-btn-lower">
-                        <lightning-button class="btn-lower" label="Asignar Fecha Armado"
-                            onclick={assignFechaArmado}></lightning-button>
-                    </div>
-                </lightning-card>
-
-            </section>
-        </section>
-        <section class="slds-backdrop slds-backdrop_open"></section>
+                <table>
+                    <thead id="calendar-body">
+                        <tr>
+                            <th>Dom</th>
+                            <th>Lun</th>
+                            <th>Mar</th>
+                            <th>Mie</th>
+                            <th>Jue</th>
+                            <th>Vie</th>
+                            <th>Sab</th>
+                        </tr>
+                    </thead>
+                    <tbody class="calendar-dates" lwc:dom="manual"></tbody>
+                </table>
+                <div id="calendar-header" class="calendar-header">
+                    <lightning-button class="prev-month" label="<" onclick={prevMonth}></lightning-button>
+                    <lightning-button class="next-month" label=">" onclick={nextMonth}></lightning-button>
+                </div>
+            </div>
+            <div class="content-btn-lower   ">
+                <lightning-button class="btn-lower" label="Asignar Fecha Entrega"
+                    onclick={assignFechaEntrega}></lightning-button>
+            </div>
+        </lightning-card>
+        <!-- <template if:true={renderCalendar}>
+            <h2>Hola Mundo!</h2>
+        </template> -->
     </template>
 
-    <template if:true={showScreen5}>
+    <template if:true={reasignarCita}>
+
+        <lightning-card title="OP Tiene Cita Asignada" class="lc-listo-facturar-false">
+            <h2 class="final-message">Su Orden de Pedido ya tiene Cita Asignada ¿Desea Reasignarla?</h2>
+            <div class="content-btn-lower">
+                <div>
+                    <lightning-button label="Si" onclick={reasignacion} class="btn-lower"></lightning-button>
+                    <lightning-button label="No" onclick={closeModal} class="btn-lower"></lightning-button>
+                </div>
+
+            </div>
+        </lightning-card>
+    </template>
+
+    <template if:true={calendarArmado}>
+        <lightning-card class="c-lightning-card" title="Armados Disponibles" icon-name="utility:event">
+            <div id="calendar-armado" class="calendar-table">
+                <div>
+                    <h2 class="month-year-armado" lwc:dom="manual"></h2>
+                </div>
+                <table>
+                    <thead id="calendar-armado-body">
+                        <tr>
+                            <th>Dom</th>
+                            <th>Lun</th>
+                            <th>Mar</th>
+                            <th>Mie</th>
+                            <th>Jue</th>
+                            <th>Vie</th>
+                            <th>Sab</th>
+                        </tr>
+                    </thead>
+                    <tbody class="calendar-dates-armado" lwc:dom="manual"></tbody>
+                </table>
+                <div id="calendar-armado-header" class="calendar-armado-header">
+                    <lightning-button class="prev-month" label="<" onclick={prevMonthArmado}></lightning-button>
+                    <lightning-button class="next-month" label=">" onclick={nextMonthArmado}></lightning-button>
+                </div>
+            </div>
+            <template if:true={datesArmado}></template>
+            <div class="content-btn-lower">
+                <lightning-button class="btn-lower" label="Asignar Fecha Armado"
+                    onclick={assignFechaArmado}></lightning-button>
+            </div>
+        </lightning-card>
+    </template>
+
+    <template if:true={resumenFinal}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <section class="slds-modal__container">
 

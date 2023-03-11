@@ -24,11 +24,12 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import Listo_a_Factruar__c from '@salesforce/schema/Opportunity.Listo_a_Factruar__c';
 import FechaEntrega__c from '@salesforce/schema/Opportunity.FechaEntrega__c';
 import CEmpresa__c from '@salesforce/schema/Opportunity.CEmpresa__c';
-import IdOP__c from '@salesforce/schema/Opportunity.IdOP__c';
+
+import IDOP_FIELD from '@salesforce/schema/Opportunity.IdOP__c';
 
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 
-const fields = [Listo_a_Factruar__c, CEmpresa__c, IdOP__c, FechaEntrega__c]
+const fields = [Listo_a_Factruar__c, CEmpresa__c, IDOP_FIELD, FechaEntrega__c]
 
 let datesEntrega = [];
 let datesArmado = [];
@@ -66,18 +67,35 @@ export default class AsignacionCitaEntrega extends LightningElement {
     @track isReasignacion = false;
     // @track datesEntrega;
 
-    @api recordId;
+    @api recordId; //--- idOpp para este LWC
     @wire(getRecord, { recordId: '$recordId', fields }) opportunity;
 
-    @wire(CurrentPageReference) pageRef;
-    get currentPageReference() {
-        console.log("PaginaRef: " + JSON.stringify(this.pageRef.attributes));
-        return this.pageRef.attributes.recordId;
+    // @wire(CurrentPageReference) pageRef;
+    // get currentPageReference() {
+    //     return this.pageRef.attributes.recordId;
+    // }
+
+    initialLoad() {
+        var result;
+        if (this.currentScreen === 1) {
+            result = this.loadCitasEntrega();
+            console.log(result);
+            if(result){
+                console.log('result 84');
+                console.log(result);
+                this.currentScreen = 3;
+            }
+            // this.nextScreen();
+            // this.renderCalendar();
+        }
+    }
+
+    connectedCallback(){
+        
     }
 
     listoFacturar() {
         listoFact = getFieldValue(this.opportunity.data, Listo_a_Factruar__c);
-        console.log("Listo a facturar: " + listoFact);
         return listoFact;
     }
 
@@ -90,12 +108,9 @@ export default class AsignacionCitaEntrega extends LightningElement {
         if (tuple) {
 
             let firstDate = tuple[0];
-            console.log(`currentMonthfirstDate: ${firstDate}`);
             let monthNumber = parseInt(firstDate.split('-')[1], 10);
-            console.log(`currentMonthNumber: ${monthNumber}`);
             numeroMes = Math.abs(monthNumber) - 1; //-- Se le resta uno (1) porque las funciones que cargan los calendarios comienzan desde la posicion 0 = Enero
 
-            console.log(`currentMonthtuple[0]: ${numeroMes}`);
         }
         return numeroMes;
     }
@@ -109,33 +124,41 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     loadProducts() {
         envioProductosEntrega({
-            idOportunidad: this.pageRef.attributes.recordId
+            idOportunidad: this.recordId
         })
             .then(result => {
                 this.products = result;
-                console.log(`result:`);
-                console.log(result);
             })
             .catch(error => {
                 this.error = error;
             });
     }
 
-    loadCitasEntrega() {
-        calendarioCitasEntrega({
-            empresa: getFieldValue(this.opportunity.data, CEmpresa__c),
-            idOp: getFieldValue(this.opportunity.data, IdOP__c)
-        })
-            .then(result => {
-                console.log(`currentMonthCE: ${result}`);
-                datesEntrega = result;
-                currentMonth = this.getNumeroMes(result);
-                console.log(`currentMonthCE: ${currentMonth}`);
-                this.renderCalendar();
-            })
-            .catch(error => {
-                this.error = error;
-            });
+    async loadCitasEntrega() {
+        var resultOut;
+        console.log('LoadCitasEntrega');
+        await calendarioCitasEntrega({
+            idOp: getFieldValue(this.opportunity.data, IDOP_FIELD)
+        }).then(result => {
+            if (result) {
+                console.log(result);
+                resultOut = result;
+                if (result.mensaje) {
+                    if (result.mensaje === "NO APLICA") { //--- Proceso NORMAL
+                        datesEntrega = result.fechas;
+                        currentMonth = this.getNumeroMes(result.fechas);
+
+                    } else if (result.mensaje === "APLICA") { //--- Proceso ENTREGAS PARCIALES
+
+                    }
+                }
+            }
+
+        }).catch(error => {
+            this.error = error;
+        });
+
+        return resultOut;
     }
 
     assignFechaEntrega() {
@@ -144,9 +167,8 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 idOp: getFieldValue(this.opportunity.data, IdOP__c),
                 citaEntrega: this.datesSelected,
                 userOperacion: this.userId,
-                reasignacion:this.isReasignacion
+                reasignacion: this.isReasignacion
             }).then(result => {
-                console.log(`result assignFechaEntrega: ${result}`);
 
                 if (result === 'CITA ASIGNADA EXITOSAMENTE') {
                     this.dispatchEvent(new ShowToastEvent({
@@ -165,9 +187,9 @@ export default class AsignacionCitaEntrega extends LightningElement {
                             this.nextScreen();
                         }
                     })
-                    .catch(error => {
-                        this.error = error;
-                    });
+                        .catch(error => {
+                            this.error = error;
+                        });
 
                 } else if (result === 'CITA NO FUE ASIGNADA') {
                     this.dispatchEvent(new ShowToastEvent({
@@ -177,7 +199,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
                     }));//--success, error
                 }
 
-                })
+            })
                 .catch(error => {
                     this.error = error;
                 });
@@ -199,23 +221,18 @@ export default class AsignacionCitaEntrega extends LightningElement {
             fechaEntrega: this.datesSelected,
             pais: codPais
         }).then(result => {
-            console.log(`result loadCalendarioArmado: `);
-            console.log(result);
             datesArmado = this.removeTwoPoints(result[0].fechas);
-            console.log(`currentMonth datesArmado: ${datesArmado}`);
             currentMonthArmado = this.getNumeroMes(datesArmado);
-            console.log(`currentMonth: ${currentMonth}`);
             tecnico = result[0].tecnico; //--tecnico
             codRecurso = result[0].recurso; //--recurso
             this.renderCalendarArmado();
         })
-        .catch(error => {
-            this.error = error;
-        });
+            .catch(error => {
+                this.error = error;
+            });
     }
 
     assignFechaArmado() {
-        console.log(`${codPais} ${this.datesSelectedArmado} ${tecnico} ${codRecurso}`);
         if (codPais && this.datesSelectedArmado && tecnico && codRecurso) {
             asignacionArmado({
                 idOp: getFieldValue(this.opportunity.data, IdOP__c),
@@ -225,10 +242,9 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 codRecurso: codRecurso,
                 reasignacion: this.isReasignacion,
                 userOperacion: this.userId
-                
+
             })
                 .then(result => {
-                    console.log(`result assignFechaArmado: ${result}`);
                     if (result === 'CITA ASIGNADA EXITOSAMENTE') {
                         this.dispatchEvent(new ShowToastEvent({
                             title: 'Success',
@@ -260,11 +276,9 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     renderCalendar() {
 
-        console.log(`Render Calendar`);
-
+        console.log('Render calendar');
         // Get reference to the calendar header
         const calendarHeader = this.template.querySelector(".month-year");
-        console.log("CalendarHeader: " + calendarHeader)
 
         // Get reference to the calendar body
         const calendarBody = this.template.querySelector('.calendar-dates');
@@ -305,7 +319,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
         // Clear the calendar body
         calendarBody.textContent = '';
-        console.log(`datesEntrega: ${datesEntrega}`);
         // Create the calendar rows
         for (let i = 0; i < 6; i++) {
             // Create a table row
@@ -323,7 +336,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 } else if (currentDay <= numDaysInMonth) {
                     cell.textContent = currentDay;
                     let currentDate = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (currentDay)).slice(-2)}`;
-                    console.log(`currentDate: ${currentDate}`);
                     cell.style.alignContent = "center";
                     if (datesEntrega.includes(currentDate)) {
                         cell.style.border = "solid";
@@ -333,7 +345,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
                         // eslint-disable-next-line no-loop-func
                         cell.addEventListener('click', () => {
                             this.datesSelected = `${currentYear}-${("0" + (currentMonth + 1)).slice(-2)}-${("0" + (cell.textContent)).slice(-2)}`;
-                            console.log(this.datesSelected);
                             this.dispatchEvent(new ShowToastEvent({
                                 title: `${this.datesSelected}`,
                                 message: `La Fecha Seleccionada es: ${this.datesSelected}`,
@@ -357,12 +368,12 @@ export default class AsignacionCitaEntrega extends LightningElement {
             // Append the row to the calendar body
             calendarBody.appendChild(row);
         }
+        return true;
     }
 
     renderCalendarArmado() {
         // Get reference to the calendar header
         const calendarHeaderArmado = this.template.querySelector(".month-year-armado");
-        console.log("CalendarHeaderArmado: " + calendarHeaderArmado)
 
         // Get reference to the calendar body
         const calendarBodyArmado = this.template.querySelector('.calendar-dates-armado');
@@ -404,7 +415,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
         // Clear the calendar body
         calendarBodyArmado.textContent = '';
 
-        console.log(`datesArmado: ${datesArmado}`);
         // Create the calendar rowArmados
         for (let i = 0; i < 6; i++) {
             // Create a table rowArmado
@@ -422,7 +432,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 } else if (currentDayArmado <= numDaysInMonthArmado) {
                     cellArmado.textContent = currentDayArmado;
                     let currentDateArmado = `${currentYearArmado}-${("0" + (currentMonthArmado + 1)).slice(-2)}-${("0" + (currentDayArmado)).slice(-2)}`;
-                    console.log(`currentDateArmado: ${currentDateArmado}`);
                     cellArmado.style.alignContent = "center";
                     if (datesArmado.includes(currentDateArmado)) {
                         cellArmado.style.border = "solid";
@@ -432,7 +441,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
                         // eslint-disable-next-line no-loop-func
                         cellArmado.addEventListener('click', () => {
                             this.datesSelectedArmado = `${currentYearArmado}-${("0" + (currentMonthArmado + 1)).slice(-2)}-${("0" + (cellArmado.textContent)).slice(-2)}`;
-                            console.log(this.datesSelectedArmado);//--citaArmado
                             this.dispatchEvent(new ShowToastEvent({
                                 title: `${this.datesSelectedArmado}`,
                                 message: `La Fecha Seleccionada es: ${this.datesSelectedArmado}`,
@@ -458,33 +466,35 @@ export default class AsignacionCitaEntrega extends LightningElement {
         }
     }
 
-    get showScreen1() {
+    get spinnerInit() {
+        this.initialLoad();
         return this.currentScreen === 1;
     }
 
-    get showScreen2() {
+    get productsOp() {
         this.listoFacturar();
         this.getFechaEntrega();
         return this.currentScreen === 2;
     }
 
-    get showScreen3() {
+    get calendarEntrega() {
+        console.log('CalendarEntrega');
         return this.currentScreen === 3;
     }
 
-    get showScreen4() {
+    get calendarArmado() {
         return this.currentScreen === 4;
     }
 
-    get showScreen5() {
+    get resumenFinal() {
         return this.currentScreen === 5;
     }
 
-    get showScreenError() {
+    get errorNoListaFactu() {
         return this.currentScreen === 6;
     }
 
-    get showScreenReasignar() {
+    get reasignarCita() {
 
         return this.currentScreen === 7;
     }
@@ -497,29 +507,26 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     nextScreen() {
+        console.log('nextScreen');
         this.currentScreen += 1;
         if (this.currentScreen === 2) {
             if (this.isReasignacion) {
-                console.log("Reasignación");
                 this.loadProducts();
                 this.currentScreen = 2;
             } else if (listoFact && !tieneFechaEntrega) {
-                console.log("Si está listo a Facturar");
                 this.loadProducts();
                 this.currentScreen = 2;
             } else if (listoFact && tieneFechaEntrega) {
                 this.currentScreen = 7;
-                console.log("Esta listo a facturar y tiene Fecha Entrega");
                 //-- En esta pantalla mostraría la opcion para reasignar cita de entrega y 
                 //-- colocaría la variable booleana de reasignación en true para pasar
                 //-- de la pantalla de cita entrega a la de finalización
             } else {
                 this.currentScreen = 6;
-                console.log("NO está listo a Facturar");
             }
 
         } else if (this.currentScreen === 3) {
-            this.loadCitasEntrega();
+            // console.log('2---');
         } else if (this.currentScreen === 4) {
             this.loadCalendarioArmado();
         }

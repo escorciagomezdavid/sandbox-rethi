@@ -1,12 +1,25 @@
 @IsTest
 public class JamarInterfaceFechasEntregasTest {
     
-    public List<Fechas> Fechas;
+	public class Response {
+		public Boolean success;
+		public String message;
+		public List<Data> data;
+	}
+
+	public String erroCode;
+	public String errorMessage;
+	public Response response;
 
 	public class Fechas {
-		public String Estado;
 		public String Fecha;
+		public String Estado;
 	}
+
+	public class Data {
+		public List<Fechas> Fechas;
+	}
+
     
     @istest static void testMetodo(){
         String prueba = '{'+

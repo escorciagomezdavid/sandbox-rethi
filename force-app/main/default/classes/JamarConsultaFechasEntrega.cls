@@ -40,65 +40,46 @@ public class JamarConsultaFechasEntrega {
             objson.put('numCantCitas','6');
             objson.put('tipoDoc',tipo);
             
-            System.debug(objson);
             body = String.valueOf(JSON.Serialize(objson));
-            System.debug(body);
             HttpResponse response = JamarConsumoHTTP.callServiceExternal(url, body, method,null);
             Answerx.add(response.getBody());
             String data = Answerx[0];
             Map <String, Object> jsonParseds = (Map<String, Object>) JSON.deserializeUntyped(data);
-            
-            Object dataResponse = jsonParseds.get('response');
-            String str = JSON.serialize(dataResponse);
-            System.debug(str);
-            Integer erroCode = Integer.valueOf(jsonParseds.get('erroCode'));
-            System.debug(erroCode);
-            String substring1 = str.substringBefore('message');
-            String fin = substring1.removeEnd('"');
-            String substring2 = fin.substringAfter('data');
-            String inicio1 = substring2.removeStart('"');
-            String inicio2 = inicio1.removeStart(':');
-            String exception1 = inicio2.removeStart('[{');
-            String exception2 = exception1.removeEnd('}],');
-            System.debug(exception2);
-            System.debug(inicio2);
-            if(exception2 == ''){
-                rp.calendario = 'No Hay Calendario';
-                value.add(rp);
-                System.debug(value);
-                return value;
-            }else{
-                List<JamarInterfaceFechasEntregas> IFechasList = new List <JamarInterfaceFechasEntregas>();	
-                IFechasList = JamarInterfaceFechasEntregas.parse(inicio2);
-                System.debug(IFechasList[0].Fechas[0].Fecha);
+            JamarInterfaceFechasEntregas IFechasList = new JamarInterfaceFechasEntregas();	
+            IFechasList = JamarInterfaceFechasEntregas.parse(data);
+            if(IFechasList.Response.success == true){
                 String dataFinalForComponent = '';
-                for(Integer i=0; i <IFechasList[0].Fechas.size(); i++ ){
-                    String valor = String.valueOf(IFechasList[0].Fechas[i].Fecha); //2021-09-13
-                    Date x = Date.valueOf(valor);
-                    DateTime dt = DateTime.newInstance(x.year(), x.month(),x.day());
-                    String format = 'EEEE,dd-MMMM-YYYY';
-                    String fecha = dt.format(format);
-                    String diaSub= fecha.substringBefore(',');
-                    String fechaF = fecha.substringAfter(',');
-                    List<String> fechaList = new List<String>();
-                    for(String st : fechaF.split('-')){         
-                        fechaList.add(st);
-                    }
-                    String dia = fechaList[0];
-                    String mes = fechaList[1];
-                    String ano = fechaList[2];
-                    System.debug(fecha);
-                    String mesSpanish = meses(mes);
-                    String diaSpanish = dias(diaSub);
-                    String fechaFormateada = diaSpanish+','+dia+'-'+mesSpanish+'-'+ano;
-                    dataFinalForComponent = dataFinalForComponent + ';' +fechaFormateada;
-                } 
-                System.debug(dataFinalForComponent);
+                for(Integer i=0; i <IFechasList.response.data[0].Fechas.size(); i++ ){
+                    if(IFechasList.Response.data[0].Fechas[i].Estado == 'S'){
+                        String valor = String.valueOf(IFechasList.response.data[0].Fechas[i].Fecha); //2021-09-13
+                        Date x = Date.valueOf(valor);
+                        DateTime dt = DateTime.newInstance(x.year(), x.month(),x.day());
+                        String format = 'EEEE,dd-MMMM-YYYY';
+                        String fecha = dt.format(format);
+                        String diaSub= fecha.substringBefore(',');
+                        String fechaF = fecha.substringAfter(',');
+                        List<String> fechaList = new List<String>();
+                        for(String st : fechaF.split('-')){         
+                            fechaList.add(st);
+                        }
+                        String dia = fechaList[0];
+                        String mes = fechaList[1];
+                        String ano = fechaList[2];
+                        System.debug(fecha);
+                        String mesSpanish = meses(mes);
+                        String diaSpanish = dias(diaSub);
+                        String fechaFormateada = diaSpanish+','+dia+'-'+mesSpanish+'-'+ano;
+                        dataFinalForComponent = dataFinalForComponent + ';' +fechaFormateada;
+                    }                    
+                }
                 String calendar = dataFinalForComponent.substring(1);           
                 rp.calendario = calendar;
                 value.add(rp);
-                return value;                    
-            }			
+            }else{
+                rp.errorCalendario = IFechasList.errorMessage;
+                value.add(rp);
+            }
+            return value;                    			
         }catch(Exception e){
             System.debug(e);
             Log__c log = new Log__c();
@@ -110,19 +91,18 @@ public class JamarConsultaFechasEntrega {
             log.JSON__c = body;
             //log.Empresa__c = empresa;
             insert log; 
+            rp.errorCalendario = e.getMessage();
+            value.add(rp);
         }        
         return value;
     }
     
-    public class Producto{
-        public String codigo_producto;
-        public String cantidad_producto;
-        public Boolean agregar;
-    }
     
     public class response{
         @invocablevariable(Label='calendario' required=true)
         public String calendario;
+        @invocablevariable(Label='mensaje error' required=true)
+        public String errorCalendario;
     }
     
     public static String meses (string fecha){

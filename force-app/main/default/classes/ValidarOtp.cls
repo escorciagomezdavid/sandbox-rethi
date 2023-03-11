@@ -12,13 +12,13 @@ Historial de Modificaciones:
 *************************************************************************/
 public with sharing class ValidarOtp {
     @invocablevariable(Label = 'cedula' required = true)
-	public string cedula;
-	@invocablevariable(Label = 'pin' required = true)
-	public string pin;
-	@invocablevariable(Label = 'empresa' required = true)
-	public string empresa;
+    public string cedula;
+    @invocablevariable(Label = 'pin' required = true)
+    public string pin;
+    @invocablevariable(Label = 'empresa' required = true)
+    public string empresa;
     
-    public ValidarOtp() {}
+    public validarOtp(){}
     public ValidarOtp(String cedula,String pin,String empresa){
         this.cedula=cedula; 
         this.pin=pin;
