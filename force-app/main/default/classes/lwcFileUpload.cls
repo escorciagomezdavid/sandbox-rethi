@@ -13,7 +13,7 @@ Historial de Modificaciones:
 * 
 
 *************************************************************************/
-public with sharing class lwcFileUpload {
+public without sharing class lwcFileUpload {
     public class relatedFile {
         public String base64;
 	    public String Title;

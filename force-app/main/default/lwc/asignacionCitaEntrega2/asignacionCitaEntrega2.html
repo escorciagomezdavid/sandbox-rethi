@@ -1,88 +1,49 @@
 <template>
     <template if:true={showScreen1}>
-        <lightning-card title="Opciones de Entrega" icon-name="utility:cart" class="final-message">
-            <div class="calendar-table">
-                <template if:true={deliveries}>
-                    <table>
-                        <thead id="product-body">
-                            <tr>
-                                <th class="td-font-samall">Descripcion</th>
-                                <th class="td-font-samall">Entregas</th>
-                                <th class="td-font-samall">Detalle</th>
-                            </tr>
-                        </thead>
-                        <tbody class="product-dates">
-                            <template for:each={deliveries} for:item="delivery">
-                                <tr key={delivery.id}>
-                                    <td class="td-font-samall">{delivery.desc}</td>
-                                    <td class="td-align-left">
-                                        {delivery.delivery_date_1}
-                                        {delivery.delivery_date_2}
-                                    </td>
-                                    <td>
-                                        <lightning-button label="Ver" onclick={showDetail}
-                                            class="btn-lower"></lightning-button>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </template>
-            </div>
-        </lightning-card>
+        <lightning-button label="Asignar Cita" onclick={nextScreen}></lightning-button>
     </template>
 
     <template if:true={showScreen2}>
-        <lightning-card title="Opciones de Entrega" icon-name="utility:cart" class="final-message">
-            <div class="calendar-table">
-                <template if:true={firstDelivery}>
-                    <table>
-                        <thead id="first-delivery">
-                            <tr>
-                                <th class="td-font-samall">Codigo</th>
-                                <th class="td-font-samall">Descripcion</th>
-                                <th class="td-font-samall">Cant</th>
-                            </tr>
-                        </thead>
-                        <tbody class="product-dates">
-                            <template for:each={firstDelivery} for:item="product">
-                                <tr key={product.sku}>
-                                    <td class="td-font-samall">{product.sku}</td>
-                                    <td class="td-align-left">Name Product</td>
-                                    <td>{product.cantidad}</td>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </template>
-                <template if:true={secondDelivery}>
-                    <table>
-                        <thead id="second-delivery">
-                            <tr>
-                                <th class="td-font-samall">Codigo</th>
-                                <th class="td-font-samall">Descripcion</th>
-                                <th class="td-font-samall">Cant</th>
-                            </tr>
-                        </thead>
-                        <tbody class="product-dates">
-                            <template for:each={secondDelivery} for:item="product">
-                                <tr key={product.sku}>
-                                    <td class="td-font-samall">{product.sku}</td>
-                                    <td class="td-align-left">Name Product</td>
-                                    <td>{product.cantidad}</td>
-                                    </td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </template>
-            </div>
-            <div class="content-btn-lower">
-                <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
-                    class="btn-lower"></lightning-button>
-            </div>
-        </lightning-card>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <section class="slds-modal__container">
+
+                <lightning-card title="Productos de la OP" icon-name="utility:cart" class="final-message">
+                    <div class="btn-close-modal">
+                        <lightning-button label="❌" onclick={closeModal}></lightning-button>
+                    </div>
+                    <div class="calendar-table">
+                        <template if:true={products}>
+                            <table>
+                                <thead id="product-body">
+                                    <tr>
+                                        <th class="td-font-samall">Codigo</th>
+                                        <th class="td-font-samall">Descripcion</th>
+                                        <th class="td-font-samall">Cant</th>
+                                        <th class="td-font-samall">Url</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="product-dates">
+                                    <template for:each={products} for:item="product">
+                                        <tr key={product.Id}>
+                                            <td class="td-font-samall">{product.ProductCode}</td>
+                                            <td class="td-align-left">{product.Product2.Description}</td>
+                                            <td>{product.Quantity}</td>
+                                            <td class="td-font-samall"><a href={product.Product2.DisplayUrl}
+                                                    target="_blank">Ver</a></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </div>
+                    <div class="content-btn-lower">
+                        <lightning-button label="Calendario con Fechas Disponibles" onclick={nextScreen}
+                            class="btn-lower"></lightning-button>
+                    </div>
+                </lightning-card>
+
+            </section>
+        </section>
         <section class="slds-backdrop slds-backdrop_open" onclick={closeModal}></section>
         <div></div>
     </template>

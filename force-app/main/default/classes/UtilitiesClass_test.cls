@@ -183,13 +183,5 @@ public class UtilitiesClass_test {
         Test.stopTest();
         
     }
-
-	@isTest static void crearLogJA(){
-		UtilitiesClass.crearLog('Consumo en ws', 'JA', 'PRUEBA', 'HOLA', '');
-	}
-
-	@isTest static void crearLogJP(){
-		UtilitiesClass.crearLog('Consumo en ws', 'JP', 'PRUEBA', 'HOLA', '');
-	}
     
 }

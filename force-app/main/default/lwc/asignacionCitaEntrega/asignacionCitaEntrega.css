@@ -109,12 +109,3 @@ lightning-card {
     padding: 10px;
     text-align: center;
 }
-
-.lightning-spinner{
-    position: relative;
-    display: inline-block;
-    width: 80px;
-    height: 80px;
-    text-align: center;
-    margin: 0;
-}

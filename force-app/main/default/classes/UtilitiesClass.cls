@@ -38,21 +38,5 @@ public class UtilitiesClass {
         
         return True;
     }
-
-    public static void crearLog(string type, string empresa, String className, String mensaje, String body){
-            Log__c log = new Log__c();
-            log.ClassName__c = className;
-            log.date__c = Datetime.now();
-            log.message__c = mensaje;
-            log.success__c = false;
-            log.type__c = type;
-            log.JSON__c = body;
-            if(empresa =='JA'){
-                log.Empresa__c = 'Colombia';
-            }else if(empresa =='JP'){
-                log.Empresa__c = 'Panamá';
-            } 
-            insert log;               
-    }
     
 }

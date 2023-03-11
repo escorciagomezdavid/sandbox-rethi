@@ -71,8 +71,6 @@ public class CreatePrecalificacion_test {
      public String id_estudio;
      @invocablevariable(Label='Tipo Cliente')
      public String cod_tipo_cliente;
-     @invocablevariable(Label='Fecha de expedicion de documento')
-     public Date fecha_docexpedicion;
     
     public CreatePrecalificacion_test(){
         this.empresa_jamar = 'JA'; 
@@ -102,6 +100,7 @@ public class CreatePrecalificacion_test {
         this.ingresos = 3000000;
         this.id_op = 'JA_01_2022_2929470';
         this.id_estudio = 'JA_95_3386996';
+              
     }
 
     public class PrecalificacionMock implements HttpCalloutMock {
@@ -113,7 +112,7 @@ public class CreatePrecalificacion_test {
                 response.setStatusCode(200);
                 System.debug('1- ENTRO AQUI');
                 return response;
-            } else if (req.getEndpoint() == 'https://dev.appsjamar.com/crm/saveprequalification/api/v1/save-form-prequalification/JA') {
+            } else if (req.getEndpoint() == 'https://6y7niu31u7.execute-api.us-east-1.amazonaws.com/prd/api/v1/save-form-prequalification/JA') {
                 response.setHeader('Content-Type', 'application/json');
                 response.setBody('{"success": true,"ps_vcMensError": "CORREGIR EL NÚMERO DE IDENTIFICACIÓN. SI ES CORRECTO Y EL PROBLEMA PERSISTE DIRECCIONAR AL CLIENTE A LAS OF DE DATACREDITO."}');  
                 response.setStatusCode(200);
@@ -171,7 +170,7 @@ public class CreatePrecalificacion_test {
         System.assertEquals(200, response2.getStatusCode());
 
         String bod = '{"c_pai_nac":"01","envia_email":"S","tipo":"T","c_est":"338699","c_agr":"95","actividad_negocio":null,"ingresos_principales":3000000,"fecha_tiempo_servicio":"2015-06-16","fecha_tiempo_vivienda":"2015-06-16","tipo_contrato":"4","tipo_vivienda":"3","eps_cotiza":"C","codigo_eps":"41","cargo":"17","empresa":"00001","ocupacion":"2","fecha_nac":"1990-05-27","nro_hijos":0,"dir":"CR 8 51B 75","est_civil":"S","sexo":"F","senas":"DASDA","seg_ape":null,"pri_ape":"CARVAJALINO","seg_nom":null,"pri_nom":"JENNIFER","usuario":"","dir_elect":"BRAYANSILVERAQ@HOTMAIL.COM","bar":"0013","ciu":"BQ","dep":"AT","c_pai":"01","n_ide":"1129514335","ide":"CC","c_emp":"JA","modulo":"0002"}';
-        HttpResponse response  = JamarConsumoHTTP.callServiceExternalWithTimeOut('https://dev.appsjamar.com/crm/saveprequalification/api/v1/save-form-prequalification/JA', bod, 'POST','30000');
+        HttpResponse response  = JamarConsumoHTTP.callServiceExternalWithTimeOut('https://6y7niu31u7.execute-api.us-east-1.amazonaws.com/prd/api/v1/save-form-prequalification/JA', bod, 'POST','30000');
         String contentType = response.getHeader('Content-Type');
         System.debug(response.getBody());
         System.assert(contentType == 'application/json');

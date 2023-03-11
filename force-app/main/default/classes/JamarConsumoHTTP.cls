@@ -122,6 +122,7 @@ public class JamarConsumoHTTP {
 			Http http = new Http();
 			HttpRequest request = new HttpRequest();
 			request.setEndpoint(url);
+            System.debug(url);
 			request.setMethod(method);
 			request.setHeader('Content-Type', 'application/json');
 			request.setBody(body);
@@ -138,6 +139,7 @@ public class JamarConsumoHTTP {
 			request.setMethod(method);
 			request.setHeader('Content-Type', 'application/json');
 			HttpResponse response = http.send(request);
+            system.debug(response);
 			return response;
 		} else {
 			Http http = new Http();

@@ -1,10 +1,5 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement } from 'lwc';
 
 export default class ParentCmp extends LightningElement {
-    @track searchValue;
-    handleSearchValue(event){
-        this.searchValue = event.detail;
-        console.log('Event Catched: ');
-        console.log(this.searchValue);
-    }
+    value = "Value from Parent Component";
 }

@@ -46,8 +46,6 @@ public class ProductosAPI_Test {
 					"Descripcion":"Comedor tipo base cubierta de madera, estructura elaborada 100% en madera de roble con acabado semimate color Natural-Blanco, tapizado en tela tipo Lino de alta durabilidad y suave al tacto color Azul. Incluye 4 sillas. *Requiere servicio de armado.",
 					"Active": true,
 					"Categoria": "Comedores",
-					"Linea": "Comedores",
-					"Sublinea": "Bife",
 					"UnidadMedida": "Unidad",
 					"UrlImagen": "https://cdn.shopify.com/s/files/1/0014/7531/3727/products/file_72aa5724-121d-4281-9fbd-0329e5df4ff2.progressive.jpg?v=1565934617",
 					"IdProducto": "JAP002",

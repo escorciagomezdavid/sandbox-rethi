@@ -54,11 +54,8 @@ public class JamarDocCertAlDia {
            String url = '';
            String urldoc = '';
            String message = '';
-           String Empoint = '';
             try {
-                
-                url = Endpoint__mdt.getInstance('Documentos').URL__c;
-                Empoint =  url +empresa+'/'+identificacion+'/'+agencia+'/'+cuenta+'/'+tipoCredito+'/AlDia';
+                url ='https://696e3lr892.execute-api.us-east-1.amazonaws.com/api/v1/'+empresa+'/'+identificacion+'/'+agencia+'/'+cuenta+'/'+tipoCredito+'/AlDia';
                 System.debug(url);
                 Http http = new Http();
                 HttpRequest request = new HttpRequest();
