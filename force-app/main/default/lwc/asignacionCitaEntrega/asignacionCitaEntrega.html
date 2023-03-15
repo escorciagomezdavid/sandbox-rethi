@@ -74,18 +74,15 @@
                     <lightning-button class="next-month" label=">" onclick={nextMonth}></lightning-button>
                 </div>
             </div>
-            <div class="content-btn-lower   ">
+            <div class="content-btn-lower">
                 <lightning-button class="btn-lower" label="Asignar Fecha Entrega"
                     onclick={assignFechaEntrega}></lightning-button>
             </div>
+            <!-- <template if:true={renderCalendar}>It's True</template> -->
         </lightning-card>
-        <!-- <template if:true={renderCalendar}>
-            <h2>Hola Mundo!</h2>
-        </template> -->
     </template>
 
     <template if:true={reasignarCita}>
-
         <lightning-card title="OP Tiene Cita Asignada" class="lc-listo-facturar-false">
             <h2 class="final-message">Su Orden de Pedido ya tiene Cita Asignada ¿Desea Reasignarla?</h2>
             <div class="content-btn-lower">
@@ -162,5 +159,79 @@
             </section>
         </section>
         <section class="slds-backdrop slds-backdrop_open"></section>
+    </template>
+
+    <template if:true={opcionesEntrega}>
+        <lightning-card title="Opciones de Entrega" icon-name="utility:cart" class="final-message">
+            <div class="calendar-table">
+                <template if:true={deliveries}>
+                    <table>
+                        <thead id="opciones-entrega">
+                            <tr>
+                                <th class="td-font-samall">Descripcion</th>
+                                <th class="td-font-samall">Entregas</th>
+                                <th class="td-font-samall">Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody class="product-dates">
+                            <template for:each={deliveries} for:item="delivery">
+                                <tr key={delivery.id}>
+                                    <td class="td-font-samall">Opcion {delivery.id}</td>
+                                    <td class="td-align-left">
+                                        <ol>
+                                            <template for:each={delivery.data} for:item="fecha">
+                                                <li key={fecha}>{fecha.fecha_entrega}</li>
+                                            </template>
+                                        </ol>
+                                    </td>
+                                    <td>
+                                        <lightning-button label={delivery.id} onclick={showDetail} data-value={delivery}
+                                            class="btn-lower"></lightning-button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+
+    <template if:true={detalleEntrega}>
+        <template if:true={opcion}>
+            <lightning-card title={opcion.id} icon-name="utility:cart" class="final-message">
+                <div class="calendar-table">
+
+                    <template for:each={opcion.data} for:item="entrega">
+                        <div key={entrega.fecha_entrega} class="content-btn-lower-sup">
+                            <lightning-button label={entrega.fecha_entrega} class="btn-lower"></lightning-button>
+                        </div>
+                        <table key={entrega.fecha_entrega}>
+                            <thead>
+                                <tr>
+                                    <th class="td-font-samall">Codigo</th>
+                                    <th class="td-font-samall">Descripcion</th>
+                                    <th class="td-font-samall">Cant</th>
+                                </tr>
+                            </thead>
+                            <tbody class="product-dates">
+                                <template for:each={entrega.productos} for:item="producto">
+                                    <tr key={producto.sku}>
+                                        <td class="td-font-samall">{producto.sku}</td>
+                                        <td class="td-align-left">{producto.nom_producto}</td>
+                                        <td>{producto.cantidad}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+                <div class="content-btn-lower">
+                    <lightning-button label="Regresar" onclick={prevScreen} class="btn-lower"></lightning-button>
+                    <lightning-button label="Confirmar Entregas" onclick={assignFechaEntregasParciales}
+                        class="btn-lower"></lightning-button>
+                </div>
+            </lightning-card>
+        </template>
     </template>
 </template>

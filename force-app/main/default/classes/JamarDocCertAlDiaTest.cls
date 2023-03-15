@@ -1,36 +1,96 @@
 @isTest
 public class JamarDocCertAlDiaTest {
     
-           @invocablevariable(Label='Empresa' required=true)
-            public string empresa;
-            @invocablevariable(Label='Identificacion' required=true)
-            public string identificacion;
-            @invocablevariable(Label='cuenta' required=true)
-            public string cuenta;  
-            @invocablevariable(Label='agencia' required=true)
-            public string agencia;
-            @invocablevariable(Label='tipo_credito' required=true)
-            public string tipoCredito;
+    @invocablevariable(Label='Empresa' required=true)
+    public string empresa;
+    @invocablevariable(Label='Identificacion' required=true)
+    public string identificacion;
+    @invocablevariable(Label='cuenta' required=true)
+    public string cuenta;  
+    @invocablevariable(Label='agencia' required=true)
+    public string agencia;
+    @invocablevariable(Label='tipo_credito' required=true)
+    public string tipoCredito;
+    
+    @IsTest static void JamarDocCertAlDiaTest () {
+        list <String> AnswerxToken = new list<String>();    
+        String method= ''; 
+        String Urltokens ='';
+        String datatoken = '';
         
-        public JamarDocCertAlDiaTest(){
-            this.empresa = 'JA';
-            this.identificacion = '123456';
-            this.cuenta = '111111111111';
-            this.agencia = '01';
-            this.tipoCredito = 'TJ';
+        
+        
+        JamarDocCertAlDia valFirm = new JamarDocCertAlDia('JA','26139520','A3', '18471', 'TJ');
+        list<JamarDocCertAlDia> Doc = new list<JamarDocCertAlDia>();
+        Doc.add(valFirm);
+        
+        String body = '{"documento": "https://jamar-pdf-dev.s3.amazonaws.com/historia_credito/aldia-155102.pdf"}';
+        String endPoint = Endpoint__mdt.getInstance('Documentos').URL__c;
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new HttpMock(200,body));
+        Map<String, Object> objson = new Map<String, Object>();
+        objson.put('usuario','CIEL');
+        objson.put('contrasena','CIEL2021*');
+        body = String.valueOf(JSON.Serialize(objson));
+        System.debug(body);
+        HttpResponse responseConsultaEndpoint = JamarConsumoHTTP.callServiceExternalWithTimeOut(Urltokens, body, method,'25000');
+        Integer codigo = responseConsultaEndpoint.getStatusCode();
+        AnswerxToken.add(responseConsultaEndpoint.getBody());
+        datatoken = AnswerxToken[0];
+        System.debug(datatoken);
+        Map<String, Object> jsonToken = (Map<String, Object>) JSON.deserializeUntyped(datatoken);
+        String token = String.ValueOf(jsonToken.get('access_token'));    
+        HttpResponse response  = JamarConsumoHTTP.callServiceExternalWithToken(Endpoint, '', 'GET', token);
+        String contentType = response.getHeader('Content-Type');
+        System.assert(contentType == 'application/json');
+        String actualValue = response.getBody();
+        System.debug(response.getBody());
+        String expectedValue = body;
+        System.assertEquals(200, response.getStatusCode());
+        Test.stopTest();
+        JamarDocCertAlDia.GeneracionCertAlDia(Doc);
+    }
+    
+    @IsTest static void JamarDocCertAlDiaFail(){
+        Profile profileId = [SELECT Id FROM Profile WHERE Name = 'Chatter Free User' LIMIT 1];    
+        User usr = new User(LastName = 'TEST',
+                            FirstName='Fail',
+                            Alias = 'ftest',
+                            Email = 'f.test@asdf.com',
+                            Username = 'f.test@asdf.com',
+                            ProfileId = profileId.id,
+                            TimeZoneSidKey = 'GMT',
+                            LanguageLocaleKey = 'en_US',
+                            EmailEncodingKey = 'UTF-8',
+                            LocaleSidKey = 'en_US'
+                           );
+        insert usr;
+        User testUser = [SELECT Id FROM User WHERE alias = 'ftest'];
+        Test.startTest();
+        System.runAs(testUser){
+            try{
+                JamarDocCertAlDia valFirm = new JamarDocCertAlDia('JA','26139520','A3', '18471', 'TJ');
+                list<JamarDocCertAlDia> Doc = new list<JamarDocCertAlDia>();
+                Doc.add(valFirm);
+                
+                JamarDocCertAlDia.GeneracionCertAlDia(Doc);
+                
+            }catch(DmlException ex){
+                System.assertEquals('Insert failed. First exception on row 0; first error: OP_WITH_INVALID_USER_TYPE_EXCEPTION, Operation not valid for this user type: []', ex.getMessage());
+            }        
+            Test.stopTest();
         }
-    
-       @isTest static void TestCertAlDia(){
-        JamarDocCertAlDiaTest test = new JamarDocCertAlDiaTest();
-        JamarDocCertAlDia testAlDia = new JamarDocCertAlDia(test.empresa,test.identificacion, 
-                                                            test.cuenta, test.agencia, test.tipoCredito);
-        list<JamarDocCertAlDia> lista = new list<JamarDocCertAlDia>();
-        lista.add(testAlDia);
-       	JamarDocCertAlDia.GeneracionCertAlDia(lista);
-       }
-       
-     
-     
-    
+    }
 
+    @IsTest static void JamarDocCertAlDiaTestEmpty () {
+        list <String> AnswerxToken = new list<String>();    
+        String method= ''; 
+        String Urltokens ='';
+        String datatoken = '';
+        
+        
+        
+        JamarDocCertAlDia valFirm = new JamarDocCertAlDia();
+        list<JamarDocCertAlDia> Doc = new list<JamarDocCertAlDia>();
+    }
 }

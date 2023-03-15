@@ -12,6 +12,7 @@ public class JamarDocPazySalvo {
     public string agencia;
     @invocablevariable(Label='tipo_credito' required=true)
     public string tipoCredito;
+
     
     
     public JamarDocPazySalvo(){}
@@ -42,7 +43,7 @@ public class JamarDocPazySalvo {
         
         /**
 * extract Values
-* */
+* */    list <String> AnswerxToken = new list<String>();
         String empresa = JamarDocPazySalvo[0].empresa;
         String identificacion = JamarDocPazySalvo[0].identificacion;
         String cuenta = JamarDocPazySalvo[0].cuenta;
@@ -52,22 +53,33 @@ public class JamarDocPazySalvo {
         String url = '';
         String urldoc = '';
         String message = '';
-        String Empoint = '';
+        String Endpoint = '';
+        String body = '';
+        String datatoken = '';
+        
         
         /**
 * Make request Http to service WebLogic and return value 
-* */
+* */     url = Endpoint__mdt.getInstance('Documentos').URL__c;
+         Endpoint = url + empresa+'/'+identificacion+'/'+agencia+'/'+cuenta+'/'+tipoCredito+'/PazYSalvo';
         try{
-            url = Endpoint__mdt.getInstance('Documentos').URL__c;
-            Empoint = url + empresa+'/'+identificacion+'/'+agencia+'/'+cuenta+'/'+tipoCredito+'/PazYSalvo';
+            String Urltokens = Endpoint__mdt.getInstance('Tokens').URL__c;
+            String method = 'POST';
+            Map<String, Object> objson = new Map<String, Object>();
+            objson.put('usuario','CIEL');
+            objson.put('contrasena','CIEL2021*');
+            body = String.valueOf(JSON.Serialize(objson));
+            System.debug(body);
+            HttpResponse responseConsultaEndpoint = JamarConsumoHTTP.callServiceExternalWithTimeOut(Urltokens, body, method,'25000');
+            Integer codigo = responseConsultaEndpoint.getStatusCode();
+            AnswerxToken.add(responseConsultaEndpoint.getBody());
+            datatoken = AnswerxToken[0];
+            System.debug(datatoken);
+            Map<String, Object> jsonToken = (Map<String, Object>) JSON.deserializeUntyped(datatoken);
+            String token = String.ValueOf(jsonToken.get('access_token'));
+            System.debug('access_token:  ' + token);
             System.debug(url);
-            Http http = new Http();
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint(url);
-            request.setMethod('GET');
-            request.setHeader('Content-Type','application/json');
-            request.setTimeout(25000);
-            HttpResponse response = http.send(request);
+            HttpResponse response = JamarConsumoHTTP.callServiceExternalWithToken(Endpoint, '', 'GET', token);
             Answerx.add(response.getBody());
             data = Answerx[0];
             Map <String, Object> jsonParsed = (Map<String, Object>) JSON.deserializeUntyped(data);

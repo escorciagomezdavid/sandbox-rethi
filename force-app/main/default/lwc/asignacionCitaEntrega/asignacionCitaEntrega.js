@@ -1,5 +1,4 @@
 import { LightningElement, track, wire, api } from 'lwc';
-import { CurrentPageReference } from 'lightning/navigation';
 import envioProductosEntrega from '@salesforce/apex/lwcCitaOp.envioProductosEntrega';
 import calendarioCitasEntrega from '@salesforce/apex/lwcCitaOp.calendarioCitasEntrega';
 import asignacionCitaEntregaOp from '@salesforce/apex/lwcCitaOp.asignacionCitaEntregaOp';
@@ -7,6 +6,7 @@ import calendarioArmado from '@salesforce/apex/lwcCitaOp.calendarioArmado';
 import asignacionArmado from '@salesforce/apex/lwcCitaOp.AsignacionArmado';
 import aplicaArmado from '@salesforce/apex/lwcCitaOp.aplicaArmado';
 import Id from '@salesforce/user/Id';
+import asignacionCitaEntregaParcial from '@salesforce/apex/lwcCitaOp.asignacionCitaEntregaParcial';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 /* Metodos de prueba de la clase de pruebas */
@@ -33,8 +33,6 @@ const fields = [Listo_a_Factruar__c, CEmpresa__c, IDOP_FIELD, FechaEntrega__c]
 
 let datesEntrega = [];
 let datesArmado = [];
-// let datesSelected = "";
-// let datesSelectedArmado = "";
 let listoFact = false;
 let tieneFechaEntrega = false;
 let numeroMes = 1;
@@ -65,34 +63,12 @@ export default class AsignacionCitaEntrega extends LightningElement {
     @track error;
     @track userId = Id;
     @track isReasignacion = false;
-    // @track datesEntrega;
+    @track deliveries;
+    @track opcion;
 
     @api recordId; //--- idOpp para este LWC
     @wire(getRecord, { recordId: '$recordId', fields }) opportunity;
 
-    // @wire(CurrentPageReference) pageRef;
-    // get currentPageReference() {
-    //     return this.pageRef.attributes.recordId;
-    // }
-
-    initialLoad() {
-        var result;
-        if (this.currentScreen === 1) {
-            result = this.loadCitasEntrega();
-            console.log(result);
-            if(result){
-                console.log('result 84');
-                console.log(result);
-                this.currentScreen = 3;
-            }
-            // this.nextScreen();
-            // this.renderCalendar();
-        }
-    }
-
-    connectedCallback(){
-        
-    }
 
     listoFacturar() {
         listoFact = getFieldValue(this.opportunity.data, Listo_a_Factruar__c);
@@ -102,6 +78,22 @@ export default class AsignacionCitaEntrega extends LightningElement {
     getFechaEntrega() {
         tieneFechaEntrega = getFieldValue(this.opportunity.data, FechaEntrega__c) ? true : false;
         return tieneFechaEntrega;
+    }
+
+    addId(json){
+        var idx = 1;
+        var jsonOut = []; //declare jsonOut as an array 
+        // eslint-disable-next-line vars-on-top
+        for (var i = 0; i < json.length; i++) {
+            // eslint-disable-next-line vars-on-top
+            var obj = {}; //declare obj inside for loop 
+            obj.id = idx; 
+            obj.data = json[i]; 
+            jsonOut.push(obj); //push obj into jsonOut array 
+            idx ++; 
+        }
+    
+        return jsonOut; //add return statement 
     }
 
     getNumeroMes(tuple) {
@@ -134,22 +126,27 @@ export default class AsignacionCitaEntrega extends LightningElement {
             });
     }
 
-    async loadCitasEntrega() {
-        var resultOut;
+    loadCitasEntrega() {
         console.log('LoadCitasEntrega');
-        await calendarioCitasEntrega({
+        calendarioCitasEntrega({
             idOp: getFieldValue(this.opportunity.data, IDOP_FIELD)
         }).then(result => {
             if (result) {
+                console.log('result:');
                 console.log(result);
-                resultOut = result;
                 if (result.mensaje) {
                     if (result.mensaje === "NO APLICA") { //--- Proceso NORMAL
                         datesEntrega = result.fechas;
                         currentMonth = this.getNumeroMes(result.fechas);
-
+                        this.currentScreen = 2;
+                        this.nextScreen();
                     } else if (result.mensaje === "APLICA") { //--- Proceso ENTREGAS PARCIALES
-
+                        console.log('APLICA');
+                        result.entregaParcial = this.addId(result.entregaParcial);//--- Esta funcion le agrega un id incremental a cada opcion de entrega
+                        this.deliveries = result.entregaParcial;
+                        console.log(result.entregaParcial);
+                        this.currentScreen = 7;
+                        this.nextScreen();
                     }
                 }
             }
@@ -158,13 +155,12 @@ export default class AsignacionCitaEntrega extends LightningElement {
             this.error = error;
         });
 
-        return resultOut;
     }
 
     assignFechaEntrega() {
         if (this.datesSelected) {
             asignacionCitaEntregaOp({
-                idOp: getFieldValue(this.opportunity.data, IdOP__c),
+                idOp: getFieldValue(this.opportunity.data, IDOP_FIELD),
                 citaEntrega: this.datesSelected,
                 userOperacion: this.userId,
                 reasignacion: this.isReasignacion
@@ -178,7 +174,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
                     }));
 
                     aplicaArmado({
-                        idOp: getFieldValue(this.opportunity.data, IdOP__c)
+                        idOp: getFieldValue(this.opportunity.data, IDOP_FIELD)
                     }).then(resultArmado => {
                         if (resultArmado === 'ARMABLE') {
                             this.nextScreen();
@@ -199,10 +195,9 @@ export default class AsignacionCitaEntrega extends LightningElement {
                     }));//--success, error
                 }
 
-            })
-                .catch(error => {
-                    this.error = error;
-                });
+            }).catch(error => {
+                this.error = error;
+            });
             // this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
         } else {
             this.dispatchEvent(new ShowToastEvent({
@@ -214,10 +209,62 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     }
 
+    assignFechaEntregasParciales() {
+        if(this.opcion.id === 1){ //---                                         Camino normal
+            asignacionCitaEntregaOp({
+                idOp: getFieldValue(this.opportunity.data, IDOP_FIELD),
+                citaEntrega: this.opcion.data[0].fecha_entrega,
+                userOperacion: this.userId,
+                reasignacion: this.isReasignacion
+            }).then(result => {
+
+                if (result === 'CITA ASIGNADA EXITOSAMENTE') {
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Success',
+                        message: result,
+                        variant: 'success'
+                    }));
+
+                    aplicaArmado({
+                        idOp: getFieldValue(this.opportunity.data, IDOP_FIELD)
+                    }).then(resultArmado => {
+                        if (resultArmado === 'ARMABLE') {
+                            this.nextScreen();
+                        } else {
+                            this.currentScreen = 4;
+                            this.nextScreen();
+                        }
+                    })
+                        .catch(error => {
+                            this.error = error;
+                        });
+
+                } else if (result === 'CITA NO FUE ASIGNADA') {
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error',
+                        message: result,
+                        variant: 'error'
+                    }));//--success, error
+                }
+
+            }).catch(error => {
+                this.error = error;
+            });
+        }
+        // else if (this.opcion.id > 1){ //---                              Asignación Entregas Parciales
+        //     asignacionCitaEntregaParcial({
+        //         idOp: getFieldValue(this.opportunity.data, IDOP_FIELD),
+        //         grupos: //---                                                Falta armar este parámetro
+        //     }).then(result => {
+        //         console.log(result);
+        //     })
+        // }
+    }
+
     loadCalendarioArmado() {
         codPais = getFieldValue(this.opportunity.data, CEmpresa__c) === 'JA' ? '01' : '02'; //--codigoPais
         calendarioArmado({
-            idOp: getFieldValue(this.opportunity.data, IdOP__c),
+            idOp: getFieldValue(this.opportunity.data, IDOP_FIELD),
             fechaEntrega: this.datesSelected,
             pais: codPais
         }).then(result => {
@@ -235,7 +282,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
     assignFechaArmado() {
         if (codPais && this.datesSelectedArmado && tecnico && codRecurso) {
             asignacionArmado({
-                idOp: getFieldValue(this.opportunity.data, IdOP__c),
+                idOp: getFieldValue(this.opportunity.data, IDOP_FIELD),
                 codigoPais: codPais,
                 citaArmado: this.datesSelectedArmado,
                 tecnico: tecnico,
@@ -272,6 +319,137 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 variant: 'error'
             }));
         }
+    }
+
+    showDetail(event){
+        this.opcion = this.deliveries[event.target.label - 1];
+        console.log('deliveries 274');
+        console.log(this.opcion);
+        this.currentScreen = 8;
+        this.nextScreen();
+    }
+
+    get spinnerInit() {
+        if (this.currentScreen === 1) {
+            this.loadCitasEntrega();
+        }
+        return this.currentScreen === 1;
+    }
+
+    get productsOp() {
+        this.listoFacturar();
+        this.getFechaEntrega();
+        return this.currentScreen === 2;
+    }
+
+    get calendarEntrega() {
+        console.log(`Entró en CalendarEntrega para cargar Calendario: ${this.currentScreen}`);
+        return this.currentScreen === 3;
+    }
+
+    get calendarArmado() {
+        return this.currentScreen === 4;
+    }
+
+    get resumenFinal() {
+        return this.currentScreen === 5;
+    }
+
+    get errorNoListaFactu() {
+        return this.currentScreen === 6;
+    }
+
+    get reasignarCita() {
+        return this.currentScreen === 7;
+    }
+
+    get opcionesEntrega() {
+        return this.currentScreen === 8;
+    }
+
+    get detalleEntrega() {
+        return this.currentScreen === 9;
+    }
+
+    reasignacion() {
+        this.isReasignacion = true;
+        this.currentScreen = 1;
+        this.nextScreen();
+    }
+
+    nextScreen() {
+        console.log('nextScreen');
+        this.currentScreen += 1;
+        if (this.currentScreen === 2) {
+            if (this.isReasignacion) {
+                this.loadProducts();
+                this.currentScreen = 2;
+            } else if (listoFact && !tieneFechaEntrega) {
+                this.loadProducts();
+                this.currentScreen = 2;
+            } else if (listoFact && tieneFechaEntrega) {
+                this.currentScreen = 7;
+            } else {
+                this.currentScreen = 6;
+            }
+
+        } else if (this.currentScreen === 3) {
+            // console.log("Renderizando Calendario...");
+            this.renderCalendar();
+        } else if (this.currentScreen === 4) {
+            this.loadCalendarioArmado();
+        }
+    }
+
+    prevScreen() {
+        console.log('prevScreen');
+        this.currentScreen -= 1;
+    }
+
+    closeModal() {
+        this.isReasignacion = false; //-- Reseteo la variable para que siempre revise
+        this.currentScreen = 1;
+    }
+
+    refreshPage() {
+        // eslint-disable-next-line no-restricted-globals
+        location.reload();
+    }
+
+    prevMonth() {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        this.renderCalendar();
+    }
+
+    nextMonth() {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        this.renderCalendar();
+    }
+
+    prevMonthArmado() {
+        currentMonthArmado--;
+        if (currentMonthArmado < 0) {
+            currentMonthArmado = 11;
+            currentYearArmado--;
+        }
+        this.renderCalendarArmado();
+    }
+
+    nextMonthArmado() {
+        currentMonthArmado++;
+        if (currentMonthArmado > 11) {
+            currentMonthArmado = 0;
+            currentYearArmado++;
+        }
+        this.renderCalendarArmado();
     }
 
     renderCalendar() {
@@ -368,10 +546,10 @@ export default class AsignacionCitaEntrega extends LightningElement {
             // Append the row to the calendar body
             calendarBody.appendChild(row);
         }
-        return true;
     }
 
     renderCalendarArmado() {
+        console.log('render calendar');
         // Get reference to the calendar header
         const calendarHeaderArmado = this.template.querySelector(".month-year-armado");
 
@@ -464,118 +642,6 @@ export default class AsignacionCitaEntrega extends LightningElement {
             // Append the rowArmado to the calendar body
             calendarBodyArmado.appendChild(rowArmado);
         }
-    }
-
-    get spinnerInit() {
-        this.initialLoad();
-        return this.currentScreen === 1;
-    }
-
-    get productsOp() {
-        this.listoFacturar();
-        this.getFechaEntrega();
-        return this.currentScreen === 2;
-    }
-
-    get calendarEntrega() {
-        console.log('CalendarEntrega');
-        return this.currentScreen === 3;
-    }
-
-    get calendarArmado() {
-        return this.currentScreen === 4;
-    }
-
-    get resumenFinal() {
-        return this.currentScreen === 5;
-    }
-
-    get errorNoListaFactu() {
-        return this.currentScreen === 6;
-    }
-
-    get reasignarCita() {
-
-        return this.currentScreen === 7;
-    }
-
-    reasignacion() {
-        this.isReasignacion = true;
-        this.currentScreen = 1;
-        this.nextScreen();
-
-    }
-
-    nextScreen() {
-        console.log('nextScreen');
-        this.currentScreen += 1;
-        if (this.currentScreen === 2) {
-            if (this.isReasignacion) {
-                this.loadProducts();
-                this.currentScreen = 2;
-            } else if (listoFact && !tieneFechaEntrega) {
-                this.loadProducts();
-                this.currentScreen = 2;
-            } else if (listoFact && tieneFechaEntrega) {
-                this.currentScreen = 7;
-                //-- En esta pantalla mostraría la opcion para reasignar cita de entrega y 
-                //-- colocaría la variable booleana de reasignación en true para pasar
-                //-- de la pantalla de cita entrega a la de finalización
-            } else {
-                this.currentScreen = 6;
-            }
-
-        } else if (this.currentScreen === 3) {
-            // console.log('2---');
-        } else if (this.currentScreen === 4) {
-            this.loadCalendarioArmado();
-        }
-    }
-
-    closeModal() {
-        this.isReasignacion = false; //-- Reseteo la variable para que siempre revise
-        this.currentScreen = 1;
-    }
-
-    refreshPage() {
-        // eslint-disable-next-line no-restricted-globals
-        location.reload();
-    }
-
-    prevMonth() {
-        currentMonth--;
-        if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        this.renderCalendar();
-    }
-
-    nextMonth() {
-        currentMonth++;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        }
-        this.renderCalendar();
-    }
-
-    prevMonthArmado() {
-        currentMonthArmado--;
-        if (currentMonthArmado < 0) {
-            currentMonthArmado = 11;
-            currentYearArmado--;
-        }
-        this.renderCalendarArmado();
-    }
-
-    nextMonthArmado() {
-        currentMonthArmado++;
-        if (currentMonthArmado > 11) {
-            currentMonthArmado = 0;
-            currentYearArmado++;
-        }
-        this.renderCalendarArmado();
     }
 
 }

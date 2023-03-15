@@ -20,6 +20,11 @@ public with sharing class CitaOp {
     public class Data {
         public String CITA_ENTREGA;
     }
+    public class Info_rem {
+		public String tienda;
+		public String per;
+		public String numop;
+	}
     @AuraEnabled public String tecnico;
     @AuraEnabled public String recurso;
     @AuraEnabled public List<String> fechas;
@@ -390,33 +395,39 @@ public with sharing class CitaOp {
         List <String> Answerx = new list<String>();
         CitaOp entregasParciales = new CitaOp();
         List<String> fechas = new list<String>();
+        List<String> codigosVendedor = new list<String>();
         String data;
-
+        String codigos =  System.label.Codigos_vendedor;
+        System.debug('Codigos 401: ' + codigos);
+        String stage = System.label.STAGE;
+        System.debug('Codigos 403: ' + stage);
+        for(String cod : codigos.split(';')){
+            codigosVendedor.add(cod);
+        }
+        System.debug('Codigos 406: ' + idOp);
         Opportunity op = [SELECT CodigoVendedor__c FROM Opportunity WHERE IdOP__c =: idOp];
+        System.debug('Codigos 408: ' + op);
         if(op != null){
-            if(op.CodigoVendedor__c != '904' || op.CodigoVendedor__c !='680' || op.CodigoVendedor__c !='680'){
-                fechas = calendarioCitaEntrega(idOp, 'OP');
-                entregasParciales.mensaje ='NO APLICA';
-                entregasParciales.fechas = fechas;
-                return entregasParciales;
-            }else{
+            if(codigosVendedor.contains(op.CodigoVendedor__c)){
                 for(String st : idOp.split('_')){         
                     datosOp.add(st);
                 }
                 String empresa = datosOp[0];
                 String numOp = datosOp[3];
                 
-                Endpoint__mdt endpoint = [SELECT URL__c  FROM Endpoint__mdt WHERE DeveloperName = 'Calendario_Entregas_Parciales' 
-                                            and Stage__c ='prd'];
+                Endpoint__mdt endpoint = [SELECT URL__c  FROM Endpoint__mdt WHERE DeveloperName like '%Entregas_Parciales%' 
+                                            and Stage__c =:stage];
                 String url = endpoint.URL__c + empresa + '/entregas/' + numOp;
+                System.debug('Codigos 421: ' + url);
                 try{
-                    HttpResponse response = JamarConsumoHTTP.callServiceExternal(url, null, 'GET',null);
+                    HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, null, 'GET');
                     Answerx.add(response.getBody());
                     data = Answerx[0];
                     Integer codigo = response.getStatusCode();
                     if(codigo == 200){
                         List<List<JamarInterfaceEntregasParciales>> calendarioEntregaParcial = new List<List<JamarInterfaceEntregasParciales>>();
                         calendarioEntregaParcial = JamarInterfaceEntregasParciales.parse(data);
+                        System.debug('Codigos 430: ' + calendarioEntregaParcial.size());
                         if(calendarioEntregaParcial.size()> 1){             
                                 entregasParciales.entregaParcial = calendarioEntregaParcial;
                                 entregasParciales.mensaje ='APLICA';                          
@@ -428,15 +439,24 @@ public with sharing class CitaOp {
                                 return entregasParciales;
                         }else{
                                 UtilitiesClass.crearLog('Consumo en ws', empresa, 'Calendario_entregas_parciales',data, url);
-                                entregasParciales.mensaje ='FALLO';                          
+                                entregasParciales.mensaje ='FALLO ENTREGAS PARCIALES';                          
                                 return entregasParciales;
                         }
+                    }else{
+                            UtilitiesClass.crearLog('Consumo en ws', empresa, 'Calendario_entregas_parciales',data, url);
+                            entregasParciales.mensaje ='FALLO ENTREGAS PARCIALES';                          
+                            return entregasParciales;
                     }
                 }catch(Exception e){
                     UtilitiesClass.crearLog('Consumo en ws', empresa, 'Calendario_entregas_parciales',e.getMessage() , data);
-                    entregasParciales.mensaje='FALLO';
+                    entregasParciales.mensaje='FALLO ENTREGAS PARCIALES';
                     return entregasParciales;
                 }
+            }else{
+                fechas = calendarioCitaEntrega(idOp, 'OP');
+                entregasParciales.mensaje ='NO APLICA';
+                entregasParciales.fechas = fechas;
+                return entregasParciales;
             }
         }else{
                 entregasParciales.mensaje='NO SE PUDO ENCONTRAR CODIGO DEL VENDEDOR';
@@ -444,7 +464,63 @@ public with sharing class CitaOp {
                 entregasParciales.fechas = fechas;
                 return entregasParciales;
         }
+    }
+       
+    public static String asignacionCitaEntregaParcial(String idOp, List<String> grupos){
+                                    String body;
+                                    String data;
+                                    String url;
+                                    List<String> datosOp = new List<String>();
+                                    List <String> Answerx = new list<String>();
+                                    Map<String, Object> objson = new Map<String, Object>();
+                                    Info_rem inforem = new Info_rem();
+                                    String stage= System.label.STAGE;
+                                    
 
-        return null;
-   }
+                                    for(String st : idOp.split('_')){         
+                                        datosOp.add(st);
+                                    }
+                                    String empresa = datosOp[0];
+                                    String agencia = datosOp[1];
+                                    String periodo = datosOp[2];
+                                    String Op = datosOp[3];
+
+                                    inforem.numop= Op;
+                                    inforem.tienda=agencia;
+                                    inforem.per=periodo;
+
+                                    objson.put('info_rem',inforem);
+                                    objson.put('grupos',grupos);
+
+                                    body = String.valueOf(JSON.Serialize(objson));
+                                    System.debug(body);
+                                    
+                                    try{
+                                        Endpoint__mdt endpoint = [SELECT URL__c  FROM Endpoint__mdt WHERE DeveloperName like '%Entregas_Parciales%' 
+                                        and Stage__c =:stage];
+                                        url = endpoint.URL__c + empresa + '/guardarreparto';
+                                        HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, body, 'POST');
+                                        Answerx.add(response.getBody());
+                                        data = Answerx[0];
+                                        Integer codigo = response.getStatusCode();
+                                        if(codigo==200){
+                                            Map <String, Object> jsonParsed = (Map<String, Object>) JSON.deserializeUntyped(data);
+                                            Boolean success = Boolean.valueOf(jsonParsed.get('status'));
+                                            String mensaje= String.valueOf(jsonParsed.get('message'));
+                                            if(success == true){
+                                                return mensaje;
+                                            }else{
+                                                return data;
+                                            }
+                                            
+                                        }else{
+                                            UtilitiesClass.crearLog('Consumo en ws', empresa, 'Asignacion_entregas_parciales',data, url);
+                                            return 'ERROR EN EL CONSUMO DEL SERVICIO';
+                                        }
+                                    }catch(Exception e){
+                                        UtilitiesClass.crearLog('Consumo en ws', empresa, 'Asignacion_entregas_parciales',e.getMessage() , data);
+                                        return e.getMessage();
+                                    }
+    }
+    
 }

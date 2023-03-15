@@ -85,6 +85,12 @@ lightning-card {
     display: flex;
 }
 
+.content-btn-lower-sup {
+    justify-content: right;
+    display: flex;
+    margin-bottom: 0%;
+}
+
 .btn-lower {
     font-weight: bold;
     text-align: center;

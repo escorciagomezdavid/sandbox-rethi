@@ -1,7 +1,7 @@
 /*************************************************************************
 Nombre de la Clase:     lwcCitaOp
 Versión :               1.0
-Fecha de Creación :     24/10/2023
+Fecha de Creación :     13/02/2023
 Funcionalidad :         Enviar informacion para ser usada en proceso de asignacion de cita.
 Clase de Prueba:        
 
@@ -10,7 +10,7 @@ Historial de Modificaciones:
 * Desarrollador        - Fecha –        Descripción
 * -----------------------------------------------------------------------
 * Daniela Sanchez         13/02/2023     Versión Original
-* 
+* Daniela Sanchez         13/03/2023     Metodos de entregas parciales
 
 *************************************************************************/
 public with sharing class lwcCitaOp {
@@ -44,6 +44,7 @@ public with sharing class lwcCitaOp {
     @AuraEnabled
     public static CitaOp calendarioCitasEntrega(String idOp){
         try {
+            System.debug('idOp: ' + idOp);
             CitaOp calendario = new CitaOp();
             calendario = CitaOp.calendarioEntregasParciales(idOp);
             return calendario;
@@ -82,6 +83,16 @@ public with sharing class lwcCitaOp {
         try {
             String citaAsignada = CitaOp.asignacionCitaArmado(idOp, codigoPais, citaArmado, tecnico, codRecurso, reasignacion, usuario);
             return citaAsignada;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled
+    public static string asignacionCitaEntregaParcial(String idOp, List<String> grupos){
+        try {
+            String mensajeConfirmacion = CitaOp.asignacionCitaEntregaParcial(idOp, grupos);
+            return mensajeConfirmacion;            
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
