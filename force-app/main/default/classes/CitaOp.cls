@@ -421,13 +421,16 @@ public with sharing class CitaOp {
                 System.debug('Codigos 421: ' + url);
                 try{
                     HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, null, 'GET');
+                    System.debug('Codigos 424: ' + response);
                     Answerx.add(response.getBody());
                     data = Answerx[0];
+                    System.debug('Codigos 427: ' + data);
                     Integer codigo = response.getStatusCode();
                     if(codigo == 200){
+                        System.debug('Codigos 430');
                         List<List<JamarInterfaceEntregasParciales>> calendarioEntregaParcial = new List<List<JamarInterfaceEntregasParciales>>();
                         calendarioEntregaParcial = JamarInterfaceEntregasParciales.parse(data);
-                        System.debug('Codigos 430: ' + calendarioEntregaParcial.size());
+                        System.debug('Codigos 432: ' + calendarioEntregaParcial.size());
                         if(calendarioEntregaParcial.size()> 1){             
                                 entregasParciales.entregaParcial = calendarioEntregaParcial;
                                 entregasParciales.mensaje ='APLICA';                          

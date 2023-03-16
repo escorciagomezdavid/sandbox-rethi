@@ -18,11 +18,12 @@ Historial de Modificaciones:
 public with sharing class JamarInterfaceEntregasParciales {
     public class Productos {
         @AuraEnabled public String sku;
+        @AuraEnabled public String nom_producto;
         @AuraEnabled public String fecha_entrega;
-        @AuraEnabled public Integer cantidad;
+        @AuraEnabled public Double cantidad;
+        @AuraEnabled public String csc;
         @AuraEnabled public Boolean es_obsequio;
         @AuraEnabled public String padre;
-        @AuraEnabled public String descripcion;
 	}
 
     @AuraEnabled public List<Calendario> calendario;

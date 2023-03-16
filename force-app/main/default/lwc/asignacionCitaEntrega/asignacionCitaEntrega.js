@@ -56,7 +56,7 @@ let currentYearArmado = todayArmado.getFullYear();
 
 
 export default class AsignacionCitaEntrega extends LightningElement {
-    @track currentScreen = 1;
+    @track currentScreen = 3;
     @track products;
     @track datesSelected;
     @track datesSelectedArmado;
@@ -65,6 +65,7 @@ export default class AsignacionCitaEntrega extends LightningElement {
     @track isReasignacion = false;
     @track deliveries;
     @track opcion;
+    @track isRenderCalendar = false;
 
     @api recordId; //--- idOpp para este LWC
     @wire(getRecord, { recordId: '$recordId', fields }) opportunity;
@@ -80,6 +81,31 @@ export default class AsignacionCitaEntrega extends LightningElement {
         return tieneFechaEntrega;
     }
 
+    makeGroups(opcion){
+        let groups = [];
+        opcion.data.forEach(element => {
+            let delivery = {};
+            let products = [];
+            delivery.cita_entrega = element.fecha_entrega;
+            element.productos.forEach(producto =>{
+                let product = {};
+                product.cod = producto.sku;
+                product.csc = producto.csc; //-Aqui falta csc
+                products.push(product);
+            });
+            delivery.productos = products;
+            groups.push(delivery);
+        });
+        
+        return groups;
+    }
+    /**
+     * Esta funcion le agrega un id incremental a cada opcion de entrega
+     * para poder identificar la Opcion escogida al mostrar el detalle de la misma.
+     * This function takes in a JSON array and adds an id property to each object in the array.
+     * @param {Array} json - The JSON array to which the id property needs to be added.
+     * @returns {Array} - A new JSON array with each object having an added id property.
+     */ 
     addId(json){
         var idx = 1;
         var jsonOut = []; //declare jsonOut as an array 
@@ -135,17 +161,24 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 console.log('result:');
                 console.log(result);
                 if (result.mensaje) {
-                    if (result.mensaje === "NO APLICA") { //--- Proceso NORMAL
+                    if (result.mensaje === "NO APLICA") { //---                 Proceso NORMAL
+                        console.log('NO APLICA 164');
+                        console.log(result);
                         datesEntrega = result.fechas;
                         currentMonth = this.getNumeroMes(result.fechas);
+                        this.isRenderCalendar = true;
                         this.currentScreen = 2;
                         this.nextScreen();
-                    } else if (result.mensaje === "APLICA") { //--- Proceso ENTREGAS PARCIALES
+                    } else if (result.mensaje === "APLICA") { //---             Proceso ENTREGAS PARCIALES
                         console.log('APLICA');
-                        result.entregaParcial = this.addId(result.entregaParcial);//--- Esta funcion le agrega un id incremental a cada opcion de entrega
+                        result.entregaParcial = this.addId(result.entregaParcial);
                         this.deliveries = result.entregaParcial;
                         console.log(result.entregaParcial);
                         this.currentScreen = 7;
+                        this.nextScreen();
+                    }else if (result.mensaje === "FALLO ENTREGAS PARCIALES"){
+                        console.log('FALLO ENTREGAS PARCIALES');
+                        this.currentScreen = 9;
                         this.nextScreen();
                     }
                 }
@@ -197,8 +230,8 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
             }).catch(error => {
                 this.error = error;
+                // this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
             });
-            // this.nextScreen(); //-- Quitar esto cuando se descomente lo de arriba, xD!
         } else {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
@@ -251,14 +284,23 @@ export default class AsignacionCitaEntrega extends LightningElement {
                 this.error = error;
             });
         }
-        // else if (this.opcion.id > 1){ //---                              Asignación Entregas Parciales
-        //     asignacionCitaEntregaParcial({
-        //         idOp: getFieldValue(this.opportunity.data, IDOP_FIELD),
-        //         grupos: //---                                                Falta armar este parámetro
-        //     }).then(result => {
-        //         console.log(result);
-        //     })
-        // }
+        else if (this.opcion.id > 1){ //---                              Asignación Entregas Parciales
+            console.log('this.opcion');
+            console.log(this.opcion);
+            console.log('this.makeGroups(this.opcion)');
+            console.log(this.makeGroups(this.opcion));
+            asignacionCitaEntregaParcial({
+                idOp: getFieldValue(this.opportunity.data, IDOP_FIELD),
+                grupos: this.makeGroups(this.opcion)
+            }).then(result => {
+                console.log('294');
+                console.log(result);
+            }).catch(error => {
+                console.log('297');
+                console.log(error);
+                this.error = error;
+            });
+        }
     }
 
     loadCalendarioArmado() {
@@ -330,6 +372,11 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     get spinnerInit() {
+        if(this.listoFacturar()=== false){
+            this.currentScreen = 6;
+            console.log('No está lista a FACTURAR');
+        }
+
         if (this.currentScreen === 1) {
             this.loadCitasEntrega();
         }
@@ -343,7 +390,14 @@ export default class AsignacionCitaEntrega extends LightningElement {
     }
 
     get calendarEntrega() {
-        console.log(`Entró en CalendarEntrega para cargar Calendario: ${this.currentScreen}`);
+        if(this.isRenderCalendar){
+            console.log(`Entró en CalendarEntrega para cargar Calendario 386: ${datesEntrega}`);
+            this.renderCalendar();
+            return this.currentScreen === 3;
+        }
+        if (this.currentScreen === 3) {
+            this.loadCitasEntrega();
+        }
         return this.currentScreen === 3;
     }
 
@@ -369,6 +423,10 @@ export default class AsignacionCitaEntrega extends LightningElement {
 
     get detalleEntrega() {
         return this.currentScreen === 9;
+    }
+
+    get errorEntregasParciales() {
+        return this.currentScreen === 10;
     }
 
     reasignacion() {
@@ -457,6 +515,9 @@ export default class AsignacionCitaEntrega extends LightningElement {
         console.log('Render calendar');
         // Get reference to the calendar header
         const calendarHeader = this.template.querySelector(".month-year");
+
+        const spinner = this.template.querySelector('lightning-spinner');
+        spinner.style.visibility = 'hidden';
 
         // Get reference to the calendar body
         const calendarBody = this.template.querySelector('.calendar-dates');

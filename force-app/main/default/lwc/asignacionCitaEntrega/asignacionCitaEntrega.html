@@ -42,9 +42,6 @@
     <template if:true={errorNoListaFactu}>
         <lightning-card title="NO Lista Facturar" class="lc-listo-facturar-false">
             <h2 class="final-message">La Oportunidad No se encuentra Lista a Facturar</h2>
-            <div class="content-btn-lower">
-                <lightning-button label="Cerrar" onclick={closeModal} class="btn-lower"></lightning-button>
-            </div>
         </lightning-card>
     </template>
 
@@ -54,7 +51,7 @@
                 <div>
                     <h2 class="month-year" lwc:dom="manual"></h2>
                 </div>
-
+                <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
                 <table>
                     <thead id="calendar-body">
                         <tr>
@@ -129,36 +126,28 @@
     </template>
 
     <template if:true={resumenFinal}>
-        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
-            <section class="slds-modal__container">
-
-                <lightning-card title="Proceso Concluido Con Exito" icon-name="utility:user" class="final-message">
-                    <div class="calendar-table">
-                        <table>
-                            <thead id="table-result">
-                                <tr>
-                                    <th>Fecha Entrega</th>
-                                    <th>Fecha Armado</th>
-                                </tr>
-                            </thead>
-                            <tbody class="product-dates">
-                                <tr>
-                                    <td>{datesSelected}</td>
-                                    <td>{datesSelectedArmado}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="final-message">Ya puedes Cerrar y tomarte un café 😎</div>
-                    <div class="content-btn-lower">
-                        <lightning-button label="Cerrar" onclick={refreshPage} class="btn-lower"></lightning-button>
-                    </div>
-
-                </lightning-card>
-
-            </section>
-        </section>
-        <section class="slds-backdrop slds-backdrop_open"></section>
+        <lightning-card title="Proceso Concluido Con Exito" icon-name="utility:user" class="final-message">
+            <div class="calendar-table">
+                <table>
+                    <thead id="table-result">
+                        <tr>
+                            <th>Fecha Entrega</th>
+                            <th>Fecha Armado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="product-dates">
+                        <tr>
+                            <td>{datesSelected}</td>
+                            <td>{datesSelectedArmado}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="final-message">Ya puedes Cerrar y tomarte un café 😎</div>
+            <div class="content-btn-lower">
+                <lightning-button label="Cerrar" onclick={refreshPage} class="btn-lower"></lightning-button>
+            </div>
+        </lightning-card>
     </template>
 
     <template if:true={opcionesEntrega}>
@@ -185,7 +174,7 @@
                                         </ol>
                                     </td>
                                     <td>
-                                        <lightning-button label={delivery.id} onclick={showDetail} data-value={delivery}
+                                        <lightning-button label={delivery.id} onclick={showDetail}
                                             class="btn-lower"></lightning-button>
                                     </td>
                                 </tr>
@@ -233,5 +222,11 @@
                 </div>
             </lightning-card>
         </template>
+    </template>
+
+    <template if:true={errorEntregasParciales}>
+        <lightning-card title="Error" class="lc-listo-facturar-false">
+            <h2 class="final-message">Error al consultar la OP.</h2>
+        </lightning-card>
     </template>
 </template>
