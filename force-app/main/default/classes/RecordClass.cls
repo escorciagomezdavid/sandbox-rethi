@@ -111,14 +111,14 @@ public class RecordClass {
     
     public static  List<Lead> getLeadIdentify(String identify, String empresa){
         List<Lead> lead = new List<Lead>();
-        lead = [SELECT Id, ownerId, MobilePhone, Whatsapp_Telfono__c, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Empresa__c, Email, Tipo_de__c, Viabilidad__c, Website FROM Lead WHERE Identificacin__c =: identify AND IsConverted =: false AND empresa__c =: empresa];
+        lead = [SELECT Id, ownerId, MobilePhone, Whatsapp_Telfono__c, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Empresa__c, Email, Tipo_de__c, Viabilidad__c, Website, aceptoContactoWhatsapp__c FROM Lead WHERE Identificacin__c =: identify AND IsConverted =: false AND empresa__c =: empresa];
         return lead;
         
     }
     
     public static  List<Lead> getLeadWithId(String Id){
         List<Lead> lead = new List<Lead>();
-        lead = [SELECT Id, ownerId, MobilePhone, Whatsapp_Telfono__c, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Email, Tipo_de__c, Website FROM Lead WHERE Id =: Id];
+        lead = [SELECT Id, ownerId, MobilePhone, Whatsapp_Telfono__c, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Email, Tipo_de__c, Website, aceptoContactoWhatsapp__c FROM Lead WHERE Id =: Id];
         return lead;
         
     }
@@ -131,7 +131,7 @@ public class RecordClass {
     
     public static  List<Lead> getLeadIdCliente(String idCliente){
         List<Lead> lead = new List<Lead>();
-        lead = [SELECT Id, ownerId, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status FROM Lead WHERE IdCliente__c=: idCliente AND IsConverted =: false Limit 1];
+        lead = [SELECT Id, ownerId, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, aceptoContactoWhatsapp__c FROM Lead WHERE IdCliente__c=: idCliente AND IsConverted =: false Limit 1];
         System.debug('Lead getLeadIdCliente');
         System.debug(lead);
         return lead;
@@ -140,7 +140,7 @@ public class RecordClass {
     
     public static  List<Lead> getLeadEmail(String email, String empresa){
         List<Lead> lead = new List<Lead>();
-        lead = [SELECT Id, ownerId, MobilePhone, Whatsapp_Telfono__c, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Email, Tipo_de__c, Viabilidad__c, Website FROM Lead WHERE Email =: email AND IsConverted =: false AND empresa__c =: empresa  Limit 1];
+        lead = [SELECT Id, ownerId, MobilePhone, Whatsapp_Telfono__c, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Email, Tipo_de__c, Viabilidad__c, Website, aceptoContactoWhatsapp__c FROM Lead WHERE Email =: email AND IsConverted =: false AND empresa__c =: empresa  Limit 1];
    
         return lead;
         
@@ -148,7 +148,7 @@ public class RecordClass {
     
     public static  List<Lead> getLeadEmailPhone(String email, String celular, String empresa){
         List<Lead> lead = new List<Lead>();
-        lead = [SELECT Id, ownerId, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Identificacin__c FROM Lead WHERE Email =: email AND IsConverted =: false AND empresa__c =: empresa AND MobilePhone =: celular  Limit 1];
+        lead = [SELECT Id, ownerId, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Identificacin__c, aceptoContactoWhatsapp__c FROM Lead WHERE Email =: email AND IsConverted =: false AND empresa__c =: empresa AND MobilePhone =: celular  Limit 1];
    
         return lead;
         
@@ -156,7 +156,7 @@ public class RecordClass {
     
     public static  List<Lead> getLeadLastDate(String email, String celular, String empresa){
         List<Lead> lead = new List<Lead>();
-        lead = [SELECT Id, ownerId, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Identificacin__c FROM Lead WHERE Email =: email AND IsConverted =: false AND empresa__c =: empresa   ORDER BY Ultima_Fecha_Ingreso__c desc LIMIT 1];
+        lead = [SELECT Id, ownerId, cancelarWorkFlow__c, Ultima_Fecha_Ingreso__c, LeadSource, Status, Identificacin__c, aceptoContactoWhatsapp__c FROM Lead WHERE Email =: email AND IsConverted =: false AND empresa__c =: empresa   ORDER BY Ultima_Fecha_Ingreso__c desc LIMIT 1];
    
         return lead;
         
@@ -202,6 +202,10 @@ public class RecordClass {
                 
                 if(record.viabilidad != null && record.viabilidad != ''){
                     getLead[0].Viabilidad__c = record.viabilidad;
+                }
+
+                if(record.aceptoContactoWhatsapp != null){
+                    getLead[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
                 }
 
                 getLead[0].Email = validarEmail(
@@ -267,6 +271,10 @@ public class RecordClass {
 
                     if(record.viabilidad != null && record.viabilidad != ''){
                         getLead[0].Viabilidad__c = record.viabilidad;
+                    }
+
+                    if(record.aceptoContactoWhatsapp != null){
+                        getLead[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
                     }
 
                     getLead[0].Email = validarEmail(
@@ -637,6 +645,10 @@ public class RecordClass {
                 lead.Website = record.webSite.length() > 255 ? record.webSite.substring(0, 255) : record.webSite;
             }
 
+            if(record.aceptoContactoWhatsapp != null){
+                lead.aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+            }
+
             Database.DMLOptions dml = new Database.DMLOptions();
             dml.DuplicateRuleHeader.AllowSave = true;
             Database.SaveResult sr = Database.insert(lead, dml);
@@ -834,6 +846,9 @@ public class RecordClass {
             if(record.webSite != null && record.webSite != '' && ( listLead[0].Website == null || listLead[0].Website == '' )){
                 listLead[0].Website = record.webSite.length() > 255 ? record.webSite.substring(0, 255) : record.webSite;
             }
+            if(record.aceptoContactoWhatsapp != null){
+                listLead[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+            }
             System.debug('listLead[0]');
             update listLead;
         }
@@ -1022,6 +1037,9 @@ public class RecordClass {
             if(record.webSite != null && record.webSite != '' && ( listLead[0].Website == null || listLead[0].Website == '' )){
                 listLead[0].Website = record.webSite.length() > 255 ? record.webSite.substring(0, 255) : record.webSite;
             }
+            if(record.aceptoContactoWhatsapp != null){
+                listLead[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+            }
             update listLead[0];
         }
         catch(Exception e){
@@ -1206,6 +1224,9 @@ public class RecordClass {
             }
             if(record.webSite != null && record.webSite != '' && ( listLead[0].Website == null || listLead[0].Website == '' )){
                 listLead[0].Website = record.webSite.length() > 255 ? record.webSite.substring(0, 255) : record.webSite;
+            }
+            if(record.aceptoContactoWhatsapp != null){
+                listLead[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
             }
             update listLead[0];
         }

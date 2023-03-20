@@ -44,7 +44,6 @@ public with sharing class lwcCitaOp {
     @AuraEnabled
     public static CitaOp calendarioCitasEntrega(String idOp){
         try {
-            System.debug('idOp: ' + idOp);
             CitaOp calendario = new CitaOp();
             calendario = CitaOp.calendarioEntregasParciales(idOp);
             return calendario;
@@ -89,9 +88,9 @@ public with sharing class lwcCitaOp {
     }
 
     @AuraEnabled
-    public static string asignacionCitaEntregaParcial(String idOp, List<String> grupos){
+    public static string asignacionCitaEntregaParcial(String idOp, String grupos,String usuario){
         try {
-            String mensajeConfirmacion = CitaOp.asignacionCitaEntregaParcial(idOp, grupos);
+            String mensajeConfirmacion = CitaOp.asignacionCitaEntregaParcial(idOp, grupos,usuario);
             return mensajeConfirmacion;            
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());

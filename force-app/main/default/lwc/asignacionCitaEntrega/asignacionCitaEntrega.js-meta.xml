@@ -7,6 +7,7 @@
         <target>lightning__AppPage</target>
         <target>lightning__HomePage</target>
         <target>lightning__RecordAction</target>
+        <target>lightning__GlobalAction</target>
     </targets>
     <targetConfigs>
         <!-- Applying this config to all types of pages like record page, app page etc. -->

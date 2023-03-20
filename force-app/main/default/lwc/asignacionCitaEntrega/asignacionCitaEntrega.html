@@ -75,7 +75,6 @@
                 <lightning-button class="btn-lower" label="Asignar Fecha Entrega"
                     onclick={assignFechaEntrega}></lightning-button>
             </div>
-            <!-- <template if:true={renderCalendar}>It's True</template> -->
         </lightning-card>
     </template>
 
@@ -127,22 +126,49 @@
 
     <template if:true={resumenFinal}>
         <lightning-card title="Proceso Concluido Con Exito" icon-name="utility:user" class="final-message">
-            <div class="calendar-table">
-                <table>
-                    <thead id="table-result">
-                        <tr>
-                            <th>Fecha Entrega</th>
-                            <th>Fecha Armado</th>
-                        </tr>
-                    </thead>
-                    <tbody class="product-dates">
-                        <tr>
-                            <td>{datesSelected}</td>
-                            <td>{datesSelectedArmado}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <template lwc:if={firstDelivery}>
+                <div class="calendar-table">
+                    <table>
+                        <thead id="table-entregas-parciales">
+                            <tr>
+                                <th>Fecha Entrega</th>
+                                <th>Fecha Armado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="product-dates">
+                            <tr>
+                                <td>
+                                    <p>Primera Entrega: {firstDelivery}</p>
+                                    <p>Segunda Entrega: {secondDelivery}</p>
+                                </td>
+                                <td>{datesSelectedArmado}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            <template lwc:else>
+                <div class="calendar-table">
+                    <table>
+                        <thead id="table-result">
+                            <tr>
+                                <th>Fecha Entrega</th>
+                                <th>Fecha Armado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="product-dates">
+                            <tr>
+                                <td>{datesSelected}</td>
+                                <td>{datesSelectedArmado}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+            
+            <template if:true={isArmable}>
+                <div class="final-message-armado">Uno de sus productos aplica a armado, por favor comuníquese con servicio al cliente 🤖</div>
+            </template>
             <div class="final-message">Ya puedes Cerrar y tomarte un café 😎</div>
             <div class="content-btn-lower">
                 <lightning-button label="Cerrar" onclick={refreshPage} class="btn-lower"></lightning-button>
@@ -166,7 +192,7 @@
                             <template for:each={deliveries} for:item="delivery">
                                 <tr key={delivery.id}>
                                     <td class="td-font-samall">Opcion {delivery.id}</td>
-                                    <td class="td-align-left">
+                                    <td>
                                         <ol>
                                             <template for:each={delivery.data} for:item="fecha">
                                                 <li key={fecha}>{fecha.fecha_entrega}</li>

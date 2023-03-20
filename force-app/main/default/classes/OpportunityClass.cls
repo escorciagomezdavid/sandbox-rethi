@@ -63,6 +63,8 @@ public class OpportunityClass {
     public String tipo_Validacion;
     public String tipo_Firma;
 
+    // --- BCORONEL 16/03/2023 SPRINT SALES
+    public Boolean aceptoContactoWhatsapp;
 
     
     public OpportunityClass() {
@@ -78,7 +80,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, Name, Causal_Desiste__c, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, CompletionStages__c, Tipo_Validacion__c, Tipo_Firma__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, CompletionStages__c, Tipo_Validacion__c, Tipo_Firma__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE IdOP__c =: opportunity.idOP];
         return opportunities;
     }
@@ -89,7 +91,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, Name, Causal_Desiste__c, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE IdOP__c =: idOp];
         return opportunities;
     }
@@ -115,7 +117,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, PriceBook2Id, Name, Causal_Desiste__c, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE Id_Cotizacion__c=: Cotizacion.idCotizacion and CEmpresa__c =: Cotizacion.empresa];
         return opportunities;
     }
@@ -126,7 +128,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, PriceBook2Id, Name, Causal_Desiste__c, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE id =: id];
         return opportunities;
     }
@@ -137,7 +139,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, Name, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE AccountId =: account.Id AND StageName =: 'Contactado' AND ( Cerrada__c !=: 'Perdida' OR Cerrada__c !=: 'Ganada') AND idOp__c =: ''];
         return opportunities;
     }
@@ -148,7 +150,7 @@ public class OpportunityClass {
                                   Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                                   FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                                   FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, Name, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                                  Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                                  Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE AccountId =: account.Id  AND ( idOp__c = '' OR idOp__c = null) AND StageName != 'Cerrado Perdido' AND StageName != 'Cerrado Ganado'];
         return opportunities;
     }
@@ -159,7 +161,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, Name, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE AccountId =: account.Id AND StageName =: 'Cotización' AND ( Cerrada__c !=: 'Perdida' OR Cerrada__c !=: 'Ganada') AND idOp__c = ''];
         return opportunities;
     }
@@ -171,7 +173,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, Name, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE AccountId =: account.Id AND StageName !=: 'Cerrado Perdido' AND StageName !=: 'Cerrado Ganado'];
         return opportunities;
     }
@@ -183,7 +185,7 @@ public class OpportunityClass {
                          Cuotas__c, DireccionDeDespacho__c, EstadoOrdenPedido__c, IdEstudio__c, EtapaDelCredito__c, ExisteEnInventario__c, CotizacionPedidoEnviada__c, CompletacionDeCredito__c, OrdenPedidoAprobada__c,
                          FechaEntrega__c, PIN__c, PropuestaDePago__c, PedidoFaturado__c, Cerrada__c, MotivoDePerdida__c, FechaFacturacion__c, IdCliente__c, FechaCompletacionCredito__c, FechaAprobacion__c,
                          FechaEnvioCotizacion__c, ConcatPendCred__c, Numero_OP__c, Tipo_de_Registro__c, Ultima_Fecha_Ingreso__c, Name, Codigo_Aprobacion__c, Valor_orden_de_pedido_con_pase_saldo__c, 
-                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c
+                         Valor_orden_de_pedido_de_financiacion__c, LinkCalificacionLargo__c, LinkCalificacionCorto__c, aceptoContactoWhatsapp__c
                          FROM Opportunity WHERE AccountId =: account.Id AND ( Cerrada__c !=: 'Perdida' AND Cerrada__c !=: 'Ganada')  ORDER BY Ultima_Fecha_Ingreso__c desc LIMIT 1];
         return opportunities;
     }
@@ -195,9 +197,11 @@ public class OpportunityClass {
         Map<String, Agencia__c> mapAgencias = RecordClass.getAgencias();
         Map<String, Departamento__c> mapDepartamentos = RecordClass.getDepartmento();
         List<Opportunity> op = new List<Opportunity>();
+        RecordClass record = new RecordClass();
       
         try{
             op = getOpportunityWithIdOp(middle);
+            record = middle.Record;
             opportunity = middle.Oportunidad;
             op[0].Api_Name__c = 'APIV2';
             op[0].Ultima_Fecha_Ingreso__c = DateTime.now();
@@ -246,6 +250,10 @@ public class OpportunityClass {
             //BRIAN
             if (opportunity.LinkCalificacionCorto != null){
                 op[0].LinkCalificacionCorto__c = opportunity.LinkCalificacionCorto;
+            }
+            //BRIAN
+            if(record.aceptoContactoWhatsapp != null){
+                op[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
             }
             //BRIAN
             
@@ -395,6 +403,10 @@ public class OpportunityClass {
             //BRIAN
             if (opportunity.LinkCalificacionCorto != null){
                 op[0].LinkCalificacionCorto__c = opportunity.LinkCalificacionCorto;
+            }
+            //BRIAN
+            if(record.aceptoContactoWhatsapp != null){
+                op[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
             }
             //BRIAN
             
@@ -552,6 +564,10 @@ public class OpportunityClass {
                 op[0].LinkCalificacionCorto__c = opportunity.LinkCalificacionCorto;
             }
             //BRIAN
+            if(record.aceptoContactoWhatsapp != null){
+                op[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+            }
+            //BRIAN
             
             if(opportunity.recogerTienda != null){
                 op[0].Recoge_en_Tienda__c = opportunity.recogerTienda;
@@ -659,6 +675,9 @@ public class OpportunityClass {
              }
              op[0].Description = account.Description;
              op[0].Ultima_Fecha_Ingreso__c = DateTime.now();
+             if(record.aceptoContactoWhatsapp != null){
+                op[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+             }
             update op[0];
         }catch(Exception e){
             throw new CustomException('Error al modificar la oportunidad en la funcion updateOpportunityWithOutIdOp ' +  e.getMessage());
@@ -695,6 +714,10 @@ public class OpportunityClass {
             if(record.canalAtencion != null){
                 ops.Canal_de_Atencion__c = record.canalAtencion;
             }
+
+            if(record.aceptoContactoWhatsapp != null){
+                ops.aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+            }
             update ops;
         }catch(Exception e){
             throw new CustomException('Error al modificar la oportunidad en la funcion updateOpportunityWithId ' +  e.getMessage());
@@ -723,6 +746,9 @@ public class OpportunityClass {
              }
              op[0].Description = account.Description;
              op[0].Ultima_Fecha_Ingreso__c = DateTime.now();
+             if(record.aceptoContactoWhatsapp != null){
+                op[0].aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+             }
             update op[0];
         }catch(Exception e){
             throw new CustomException('Error al modificar la oportunidad en la funcion updateOpportunityWithOutIdOpStage ' +  e.getMessage());
@@ -760,7 +786,9 @@ public class OpportunityClass {
             if(leadConvertido){
                 op.Convertido__c = true;
             }
-             
+            if(record.aceptoContactoWhatsapp != null){
+                op.aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+            }
              
             insert op;
         }catch(Exception e){
@@ -824,9 +852,17 @@ public class OpportunityClass {
                 ops.Agencia_Vendedor__c = mapAgencias.get(transformMiddle.agenciaVendedor).Id;
             }
             
-            ops.LinkCalificacionLargo__c = transformMiddle.LinkCalificacionLargo;
+            if(transformMiddle.LinkCalificacionLargo != null){
+                ops.LinkCalificacionLargo__c = transformMiddle.LinkCalificacionLargo;
+            }
             //BRIAN
-            ops.LinkCalificacionCorto__c = transformMiddle.LinkCalificacionCorto;
+            if(transformMiddle.LinkCalificacionCorto != null){
+                ops.LinkCalificacionCorto__c = transformMiddle.LinkCalificacionCorto;
+            }
+            //BRIAN
+            if(record.aceptoContactoWhatsapp != null){
+                ops.aceptoContactoWhatsapp__c = record.aceptoContactoWhatsapp;
+            }
             //BRIAN
             ops.Periodo__c = transformMiddle.periodo;
             ops.Accion_Sugerida__c = transformMiddle.accionSugerida;

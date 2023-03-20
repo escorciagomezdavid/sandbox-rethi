@@ -25,6 +25,15 @@ public with sharing class CitaOp {
 		public String per;
 		public String numop;
 	}
+    public class Productos {
+        @AuraEnabled public String csc;
+        @AuraEnabled public String cod;
+    }
+    @AuraEnabled public List<Grupos> grupos;
+    public class Grupos {
+        @AuraEnabled public List<Productos> productos;
+        @AuraEnabled public String cita_entrega;
+    }
     @AuraEnabled public String tecnico;
     @AuraEnabled public String recurso;
     @AuraEnabled public List<String> fechas;
@@ -205,6 +214,8 @@ public with sharing class CitaOp {
                                                 ActivityClass.CrearTarea(datos);
                                             }
                                         }else if(!casosAbiertos.isEmpty()){
+                                            updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario,
+                                                                'Asignacion de Cita de Entrega y Armado de OP');
                                             System.debug(casosAbiertos);
                                             casosAbiertos[0].Status='Cerrado';
                                             update casosAbiertos[0];
@@ -398,15 +409,11 @@ public with sharing class CitaOp {
         List<String> codigosVendedor = new list<String>();
         String data;
         String codigos =  System.label.Codigos_vendedor;
-        System.debug('Codigos 401: ' + codigos);
         String stage = System.label.STAGE;
-        System.debug('Codigos 403: ' + stage);
         for(String cod : codigos.split(';')){
             codigosVendedor.add(cod);
         }
-        System.debug('Codigos 406: ' + idOp);
         Opportunity op = [SELECT CodigoVendedor__c FROM Opportunity WHERE IdOP__c =: idOp];
-        System.debug('Codigos 408: ' + op);
         if(op != null){
             if(codigosVendedor.contains(op.CodigoVendedor__c)){
                 for(String st : idOp.split('_')){         
@@ -418,19 +425,14 @@ public with sharing class CitaOp {
                 Endpoint__mdt endpoint = [SELECT URL__c  FROM Endpoint__mdt WHERE DeveloperName like '%Entregas_Parciales%' 
                                             and Stage__c =:stage];
                 String url = endpoint.URL__c + empresa + '/entregas/' + numOp;
-                System.debug('Codigos 421: ' + url);
                 try{
                     HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, null, 'GET');
-                    System.debug('Codigos 424: ' + response);
                     Answerx.add(response.getBody());
                     data = Answerx[0];
-                    System.debug('Codigos 427: ' + data);
                     Integer codigo = response.getStatusCode();
                     if(codigo == 200){
-                        System.debug('Codigos 430');
                         List<List<JamarInterfaceEntregasParciales>> calendarioEntregaParcial = new List<List<JamarInterfaceEntregasParciales>>();
                         calendarioEntregaParcial = JamarInterfaceEntregasParciales.parse(data);
-                        System.debug('Codigos 432: ' + calendarioEntregaParcial.size());
                         if(calendarioEntregaParcial.size()> 1){             
                                 entregasParciales.entregaParcial = calendarioEntregaParcial;
                                 entregasParciales.mensaje ='APLICA';                          
@@ -467,19 +469,18 @@ public with sharing class CitaOp {
                 entregasParciales.fechas = fechas;
                 return entregasParciales;
         }
-    }
-       
-    public static String asignacionCitaEntregaParcial(String idOp, List<String> grupos){
-                                    String body;
+    }       
+    public static String asignacionCitaEntregaParcial(String idOp, String grupos,String usuario){
+                                    System.debug(grupos);
                                     String data;
                                     String url;
                                     List<String> datosOp = new List<String>();
                                     List <String> Answerx = new list<String>();
                                     Map<String, Object> objson = new Map<String, Object>();
+                                    List<TaskResponse> updateTask = new List<TaskResponse>();
                                     Info_rem inforem = new Info_rem();
                                     String stage= System.label.STAGE;
                                     
-
                                     for(String st : idOp.split('_')){         
                                         datosOp.add(st);
                                     }
@@ -488,21 +489,12 @@ public with sharing class CitaOp {
                                     String periodo = datosOp[2];
                                     String Op = datosOp[3];
 
-                                    inforem.numop= Op;
-                                    inforem.tienda=agencia;
-                                    inforem.per=periodo;
 
-                                    objson.put('info_rem',inforem);
-                                    objson.put('grupos',grupos);
-
-                                    body = String.valueOf(JSON.Serialize(objson));
-                                    System.debug(body);
-                                    
                                     try{
                                         Endpoint__mdt endpoint = [SELECT URL__c  FROM Endpoint__mdt WHERE DeveloperName like '%Entregas_Parciales%' 
                                         and Stage__c =:stage];
                                         url = endpoint.URL__c + empresa + '/guardarreparto';
-                                        HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, body, 'POST');
+                                        HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, grupos, 'POST');
                                         Answerx.add(response.getBody());
                                         data = Answerx[0];
                                         Integer codigo = response.getStatusCode();
@@ -511,6 +503,18 @@ public with sharing class CitaOp {
                                             Boolean success = Boolean.valueOf(jsonParsed.get('status'));
                                             String mensaje= String.valueOf(jsonParsed.get('message'));
                                             if(success == true){
+                                                list<Case> casosAbiertos = [SELECT Id,Status FROM Case 
+                                                    WHERE Oportunidad__r.IdOP__c  =:idOp];
+                                                if(!casosAbiertos.isEmpty()){
+                                                    updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario,
+                                                                'Asignacion de Cita de Entrega y Armado de OP');
+                                                    System.debug(casosAbiertos);
+                                                    casosAbiertos[0].Status='Cerrado';
+                                                    update casosAbiertos[0];
+                                                }else{
+                                                    updateTask = ActivityClass.ActualizarTarea(Op, 'Completed', usuario,
+                                                                'Asignacion de Cita de Entrega y Armado de OP');
+                                                }
                                                 return mensaje;
                                             }else{
                                                 return data;
