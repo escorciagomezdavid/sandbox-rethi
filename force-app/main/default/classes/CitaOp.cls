@@ -81,7 +81,7 @@ public with sharing class CitaOp {
         body = String.valueOf(JSON.Serialize(objson));
            
         try{
-            HttpResponse response = JamarConsumoHTTP.callServiceExternal(url, body, method,null);
+            HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, body, method);
             Answerx.add(response.getBody());
             String data = Answerx[0];
             Integer codigo = response.getStatusCode();
@@ -191,7 +191,7 @@ public with sharing class CitaOp {
                                 String endPoint = Endpoint__mdt.getInstance('ValidacionCitaEntrega').URL__c;
                                 url = endPoint + empresa + '/validacionCitaEntrega?n_ide=' + n_ide + '&rem=' + Op + 
                                                 '&c_agr=' + agencia + '&per=' + periodo;
-                                HttpResponse response = JamarConsumoHTTP.callServiceExternal(url, null, 'GET',null);
+                                HttpResponse response = JamarConsumoHTTP.callServiceExternalBasic(url, null, 'GET');
                                 Integer codigo = response.getStatusCode();
                                 Answerx.add(response.getBody());
                                 String data = Answerx[0];
@@ -280,7 +280,7 @@ public with sharing class CitaOp {
                                                 objson.put('service','');
                                                 objson.put('date', mydate);
                                     body = String.valueOf(JSON.Serialize(objson));
-                                    HttpResponse response =JamarConsumoHTTP.callServiceExternal(url, body, 'POST',null);
+                                    HttpResponse response =JamarConsumoHTTP.callServiceExternalBasic(url, body, 'POST');
                                     Answerx.add(response.getbody());
                                     Integer codigo = response.getStatusCode();
                                     String data = Answerx[0];
@@ -370,7 +370,7 @@ public with sharing class CitaOp {
                                                 objson.put('unitType', 'J1');
                                                 body = String.valueOf(JSON.Serialize(objson));
                                                 System.debug(body);
-                                                HttpResponse response =JamarConsumoHTTP.callServiceExternal(url, body, 'PUT',null);
+                                                HttpResponse response =JamarConsumoHTTP.callServiceExternalBasic(url, body, 'PUT');
                                                 Answerx.add(response.getbody());
                                                 String data = Answerx[0];
                                                 Map <String, Object> jsonParseds = (Map<String, Object>) JSON.deserializeUntyped(data);
@@ -413,9 +413,9 @@ public with sharing class CitaOp {
         for(String cod : codigos.split(';')){
             codigosVendedor.add(cod);
         }
-        Opportunity op = [SELECT CodigoVendedor__c FROM Opportunity WHERE IdOP__c =: idOp];
-        if(op != null){
-            if(codigosVendedor.contains(op.CodigoVendedor__c)){
+        List<Opportunity> op = [SELECT CodigoVendedor__c FROM Opportunity WHERE IdOP__c =: idOp];
+        if(!Op.isEmpty()){
+            if(codigosVendedor.contains(op[0].CodigoVendedor__c)){
                 for(String st : idOp.split('_')){         
                     datosOp.add(st);
                 }

@@ -85,6 +85,13 @@ lightning-card {
     display: flex;
 }
 
+.content-btn-lower-sup {
+    justify-content: right;
+    display: flex;
+    margin: 0%;
+    padding: 0%;
+}
+
 .btn-lower {
     font-weight: bold;
     text-align: center;
@@ -108,4 +115,23 @@ lightning-card {
 .final-message {
     padding: 10px;
     text-align: center;
+}
+
+.final-message-armado {
+    padding: 10px;
+    text-align: center;
+    color: brown;
+}
+
+.lightning-spinner{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    margin: 0;
+}
+
+.hide {
+    display: none;
 }
