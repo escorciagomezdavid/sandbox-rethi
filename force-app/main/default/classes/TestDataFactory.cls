@@ -53,6 +53,12 @@ public class TestDataFactory {
     public static Map<Integer, PricebookEntry> MapPriceEntries;
     
     public static Map<Integer, OpportunityLineItem> MapOpItems;
+
+    public String empresa;
+    public String id_oportunidad;
+    public String proceso;
+    public String codigoVendedor;
+
     
     public static void createGeneralData() {
         
@@ -179,8 +185,7 @@ insert mapeo1; insert mapeo2;
         if (listLeads.size()>0) {insert listLeads;} 
     }
     
-    
-    
+ 
     public static void createCases(Integer iTotReg){
         //RecordType recordType = MapRecordType.get('Case-MSAsignacionCitaMedica');
         //RecordType recordType2 = MapRecordType.get('Case-HMAsignacionCitaMedica');
@@ -1028,6 +1033,105 @@ if (listIdRequestCases.size()>0) {insert listIdRequestCases;}
             MapOpItems.put(x, item);
         }
         if(MapOpItems.size()>0) insert MapOpItems.values();
+    }
+
+    public static void crearOrdenPedido(TestDataFactory value){
+        List<String> datosOp = new List<String>();
+        for(String st : value.id_oportunidad.split('_')){         
+            datosOp.add(st);
+        }
+        String empresa = datosOp[0];
+        String agencia = datosOp[1];
+        String periodo = datosOp[2];
+        String Ordenpedido = datosOp[3];
+        Account ac = new Account();
+        ac.FirstName = 'Prueba';
+        ac.LastName = 'Prueba';
+        ac.Empresa__c = value.empresa;
+        ac.IdCliente__c = 'JA_001';
+        ac.Identificacion__c = 'ID001';
+        insert ac;
+        
+        System.debug('---------------- SE CREA LA CUENTA -------------------------');
+        System.debug(ac.FirstName);
+        
+        Opportunity op = new  Opportunity();
+		op.Numero_OP__c = Ordenpedido;
+        op.AccountId = ac.Id;
+        op.Name = ac.FirstName + '_' + ac.LastName;
+        op.CloseDate = Date.newInstance(2020, 01, 01);
+        op.IdOP__c = value.id_oportunidad;
+        op.StageName = 'Propuesta';
+        op.CodigoVendedor__c=value.codigoVendedor;
+        insert op;
+        System.debug('---------------- SE CREA LA OPORTUNIDAD DE VENTA -------------------------');
+        System.debug(op.Name);
+        System.debug(op.IdOP__c);
+        
+        
+        List<OpportunityLineItem> alm_prod_op = new List<OpportunityLineItem>();        
+        OpportunityLineItem opProduct = new OpportunityLineItem();
+        Product2 product = new Product2();
+        PricebookEntry standardPrice2 = new PricebookEntry();
+        
+        
+        
+        
+        product.Name = 'Product 001';
+        product.ProductCode = '234567';
+        product.IsActive = true;
+        product.Estado_de_producto__c='INACTIVO';
+        product.IdProducto__c = value.empresa +'_234567';
+        if(value.proceso == 'SinUrl'){
+            product.Armable__c = false;
+            product.Aplica_garantia__c ='SI';
+        }else{
+            product.Armable__c = true;
+            product.Aplica_garantia__c = 'SI';
+            product.DisplayUrl = 'https://app-vendedor-img-step-prd.s3.amazonaws.com/7021603/789630.jpeg';
+        }    
+        insert product;
+        
+        System.debug('---------------- SE CREA EL PRODUCTO NUMERO: ');
+        System.debug(product.Name);
+        System.debug(product.ProductCode);
+        System.debug(product.IdProducto__c);
+        
+        
+        standardPrice2.Pricebook2Id = Test.getStandardPricebookId();
+        standardPrice2.Product2Id = product.Id;
+        standardPrice2.UnitPrice = 59900;
+        standardPrice2.IsActive = true;
+        insert standardPrice2;
+        
+        System.debug('---------------- SE CREA EL PRICEBOOK PARA EL PRODUCTO NUMERO: ');
+        System.debug(standardPrice2.Pricebook2Id);
+        System.debug(standardPrice2.Product2Id);
+        System.debug(standardPrice2.UnitPrice);
+        
+        opProduct.IdOP__c = value.id_oportunidad;
+        opProduct.OpportunityId = op.Id;
+        opProduct.PricebookEntryId = standardPrice2.id;
+        opProduct.IdProducto__c = product.IdProducto__c;
+        opProduct.Product2Id = product.Id;
+        opProduct.Quantity = 1;
+        opProduct.TotalPrice = 59900;
+        if(value.proceso == 'SinArmado'){
+            opProduct.Display_Url__c = 'https://app-vendedor-img-step-prd.s3.amazonaws.com/7021603/789630.jpeg';
+        }else if(value.proceso == 'SinGarantia'){
+            opProduct.Armable__c = true;
+            opProduct.Display_Url__c ='https://app-vendedor-img-step-prd.s3.amazonaws.com/7021603/789630.jpeg';
+        }
+        insert opProduct;
+        
+        System.debug('---------------- SE CREA EL PRODUCTO DE OPORTUNIDAD NUMERO: ');
+        System.debug(opProduct.IdOP__c = value.id_oportunidad);
+        System.debug(opProduct.OpportunityId);
+        System.debug(opProduct.IdProducto__c);
+        System.debug(opProduct.Product2Id);
+        System.debug(opProduct.Quantity);
+        
+        
     }
     
     

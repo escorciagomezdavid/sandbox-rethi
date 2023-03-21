@@ -1,4 +1,4 @@
-public class JamarDocPazySalvo {
+public class JamarDocPazySalvo { //rethi
     /**
 * Attributes the class apex, exist Attributes common between class example Cuenta al dia
 * */
