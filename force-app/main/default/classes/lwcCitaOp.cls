@@ -68,7 +68,7 @@ public with sharing class lwcCitaOp {
         try {
             list<CitaOp> calendario = new list<CitaOp>();
             calendario = CitaOp.calendarioCitaArmado(idOp, fechaEntrega, pais);
-            System.debug(calendario);
+            System.debug('73-calendarioArmado: ' + calendario);
             return calendario;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
